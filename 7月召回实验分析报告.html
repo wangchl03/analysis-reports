@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>7月流失用户召回实验分析报告</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:37px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px;line-height:1.35}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 10px 28px rgba(0,0,0,.13)}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:330px;position:relative}.short{height:285px}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.7}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0;align-items:flex-start}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px;line-height:1.3}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:#ff8d8d;font-weight:750}td.win{font-weight:800;font-size:15px;color:#ccecff}tr.w1 td{background:rgba(21,72,112,.5)}tr.w2 td{background:rgba(11,45,74,.55)}tr.w3 td{background:rgba(21,72,112,.5)}tr.w4 td{background:rgba(11,45,74,.55)}tr.total td{background:#0e3453;font-weight:800}details{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:#092640}summary{cursor:pointer;padding:17px 20px;font-size:17px;font-weight:750;color:#e5f5ff}pre{margin:0;padding:0 20px 24px;overflow:auto;color:#d7edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">7 月流失用户召回实验专项分析</div><h1>30% 降息券 AB 测试<br>四周窗口提单质量拆解分析报告</h1><p>统计期间：2026 年 7 月（4 批 T4 召回，召回日 07-21 ~ 07-24）　·　报告生成时间：2026 年 8 月 24 日</p><span class="tag">券有效期 7 天，仅第一周实验组使用优惠券；第二周起两组待遇一致</span></header>
+
+<h2>核心结论</h2><p class="desc">窗口口径：第一周=召回日至召回日+6（券有效期内）；第二周=+7~+13；第三周=+14~+20；21天后=+21 及之后。盈利率=(已还-放款本金)/放款本金，排除在途（status=5）。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">召回实验用户</div><div class="num cyan">1,317</div><div class="sub">对照组 657 人 · 实验组 660 人</div></article><article class="card"><div class="label">第一周（券期）提单率提升</div><div class="num green">+7.46pp</div><div class="sub">实验组 32.73% − 对照组 25.27%</div></article><article class="card"><div class="label">第一周订单盈利率</div><div class="num green">19.60%</div><div class="sub">盈利额 +17.4 万，利润唯一来源</div></article><article class="card"><div class="label">第二周分水岭</div><div class="num pink">-11.08%</div><div class="sub">券过期后实验组盈利率转负，对照组仍 +16.92%</div></article></section>
+
+<h2>一、总体概览：总和与 AB 组对比</h2><p class="desc">量利权衡总账：实验组放款金额 +11.3%，但盈利额 -62.6%，整体净效果为负。</p>
+<div class="table"><table><caption>总体与分组的完整指标（评估窗口 = 召回日及之后）</caption><thead><tr><th>分组</th><th>用户数</th><th>提单用户</th><th>提单率</th><th>订单数</th><th>放款订单</th><th>放款金额</th><th>逾期订单/到期</th><th>逾期率</th><th>盈利额</th><th>盈利率</th></tr></thead><tbody>
+<tr><td>总和</td><td>1,317</td><td>699</td><td>53.07%</td><td>1,180</td><td>1,000</td><td>3,321,552</td><td>212/634</td><td>33.44%</td><td class="good">+89,723</td><td>5.07%</td></tr>
+<tr><td>对照组（无动作）</td><td>657</td><td>327</td><td>49.77%</td><td>537</td><td>460</td><td>1,572,101</td><td>94/285</td><td>32.98%</td><td class="good">+65,285</td><td class="good">7.92%</td></tr>
+<tr><td>实验组（30%降息券）</td><td>660</td><td>372</td><td class="good">56.36%</td><td>643</td><td>540</td><td>1,749,451</td><td>118/349</td><td>33.81%</td><td>+24,438</td><td>2.59%</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>结论：</strong>30% 降息券把提单率从 <strong>49.77%</strong> 抬到 <strong>56.36%</strong>（+6.59pp），多转化 45 个提单用户、多 106 笔订单、多放款 <strong>17.7 万（+11.3%）</strong>；但盈利额反而从 <strong>+6.5 万</strong> 降到 <strong>+2.4 万（-62.6%）</strong>。规模增量没有补上降息 + 高风险用户带来的利润损失。</div>
+
+<h2>二、AB 组 × 四周窗口交叉</h2><p class="desc">券只作用于第一周；第二周起两组待遇相同，此时两组回归用户的质量差异反映「券的长期副作用」。窗口优先排列，窗口内对照组与实验组上下相邻，便于同窗口对比。</p>
+<div class="table"><table><caption>按窗口优先的交叉指标（每一窗口内：对照组 / 实验组）</caption><thead><tr><th>窗口</th><th>分组</th><th>提单用户</th><th>提单率</th><th>历史借款次数</th><th>订单数</th><th>放款金额</th><th>逾期率</th><th>盈利额</th><th>盈利率</th></tr></thead><tbody>
+<tr class="w1"><td class="win" rowspan="2">第一周<br>（券有效期内）</td><td>对照组</td><td>166</td><td>25.27%</td><td>2.93</td><td>175</td><td>423,811</td><td>30.28%</td><td class="good">+81,786</td><td class="good">21.95%</td></tr>
+<tr class="w1"><td>实验组</td><td>216</td><td class="good">32.73%</td><td>2.93</td><td>235</td><td>605,554</td><td class="good">25.65%</td><td class="good">+92,439</td><td class="good">17.90%</td></tr>
+<tr class="w2"><td class="win" rowspan="2">第二周<br>（券过期后）</td><td>对照组</td><td>97</td><td>14.76%</td><td>2.77</td><td>105</td><td>361,854</td><td>28.75%</td><td class="good">+48,392</td><td class="good">16.92%</td></tr>
+<tr class="w2"><td>实验组</td><td>106</td><td>16.06%</td><td>2.91</td><td>117</td><td>262,029</td><td class="bad">40.54%</td><td class="bad">-22,093</td><td class="bad">-11.08%</td></tr>
+<tr class="w3"><td class="win" rowspan="2">第三周</td><td>对照组</td><td>91</td><td>13.85%</td><td>2.57</td><td>94</td><td>251,851</td><td class="bad">44.68%</td><td class="bad">-37,087</td><td class="bad">-34.92%</td></tr>
+<tr class="w3"><td>实验组</td><td>101</td><td>15.30%</td><td class="good">3.41</td><td>113</td><td>303,629</td><td class="bad">45.00%</td><td class="bad">-16,632</td><td class="bad">-10.19%</td></tr>
+<tr class="w4"><td class="win" rowspan="2">21 天后</td><td>对照组</td><td>133</td><td>20.24%</td><td>2.77</td><td>163</td><td>534,585</td><td class="bad">43.75%</td><td class="bad">-27,806</td><td class="bad">-46.40%</td></tr>
+<tr class="w4"><td>实验组</td><td>153</td><td>23.18%</td><td class="good">3.45</td><td>178</td><td>578,239</td><td class="bad">50.00%</td><td class="bad">-29,276</td><td class="bad">-44.56%</td></tr>
+</tbody></table></div>
+<p class="desc" style="margin-top:6px">历史借款次数 = 召回前历史放款次数（全量基线：对照组 2.52 / 实验组 2.60）。第一周两组回归用户画像一致（2.93）；券过期后对照组回落到基线（低频慢热型），实验组不降反升（3.41/3.45，高频用户）。</p>
+<section class="grid g2"><article class="chart"><h3>四周提单率趋势</h3><p>第一周差距 +7.46pp；券过期后差距收窄至 +1~3pp。灰色=对照组，青色=实验组。</p><div class="box"><canvas id="rateLine"></canvas></div></article><article class="chart"><h3>四周盈利率趋势</h3><p>第二周分水岭：对照组仍正，实验组转负。</p><div class="box"><canvas id="profitLine"></canvas></div></article><article class="chart"><h3>四周逾期率趋势</h3><p>第二周起实验组逾期率反超对照组。</p><div class="box"><canvas id="odLine"></canvas></div></article><article class="chart"><h3>四周放款金额</h3><p>券只拉动第一周放款；后续窗口两组接近。</p><div class="box"><canvas id="remitBar"></canvas></div></article></section>
+<div class="callout"><strong>结论：</strong>券的拉动集中在第一周（+7.46pp）。券过期后两组待遇一致、提单率差距收窄到 1~3pp，但 <strong>实验组用户质量滑坡更陡</strong>：第二周实验组盈利率转负（-11.08%）而对照组仍 +16.92%、逾期率反超（40.54% vs 28.75%）。券在第一周「提前消化」了实验组的优质用户，剩下晚回归的用户质量更差（选择效应），这是降息券的长期副作用。</div>
+
+<h2>三、机制验证：优质用户前置消化</h2><p class="desc">用召回名单自带的历史特征（历史高息率、历史逾期等）与第一周行为数据，验证「对照组第二周仍好、实验组第二周转差」的成因。高息率 = 历史贷款中被按高风险定价的比例，越高代表历史质量越差。</p>
+<section class="grid g2"><article class="chart"><h3>各窗口回归用户的历史高息率</h3><p>第二周是分岔点：对照组低于基线（优质），实验组高于基线（风险浓缩）。</p><div class="box short"><canvas id="verifyHigh"></canvas></div></article><article class="chart"><h3>各窗口回归用户的历史逾期订单数</h3><p>第一周实验组历史逾期最低，印证券提前拉走了优质用户。</p><div class="box short"><canvas id="verifyOd"></canvas></div></article></section>
+<div class="table"><table><caption>验证一：基线平衡（随机分组有效性）</caption><thead><tr><th>分组</th><th>人数</th><th>历史高息率</th><th>历史逾期订单数</th><th>历史放款次数</th></tr></thead><tbody>
+<tr><td>实验组 全量基线</td><td>660</td><td>0.304</td><td>0.28</td><td>2.60</td></tr>
+<tr><td>对照组 全量基线</td><td>657</td><td>0.310</td><td>0.30</td><td>2.52</td></tr>
+</tbody></table></div>
+<p class="desc" style="margin-bottom:10px">两组历史特征几乎一致 → 随机分组有效，后续差异不是初始不平衡造成。</p>
+<div class="table"><table><caption>验证二：各窗口回归用户的历史高息率（决定性证据）</caption><thead><tr><th>首次提单窗口</th><th>对照组高息率</th><th>实验组高息率</th><th>解读</th></tr></thead><tbody>
+<tr><td>基线（全量）</td><td>0.310</td><td>0.304</td><td>两组起点一致</td></tr>
+<tr><td>第一周</td><td>0.287</td><td>0.290</td><td>券期两组质量接近，均接近基线</td></tr>
+<tr class="w2"><td>第二周</td><td class="good">0.220（低于基线 9pp）</td><td class="bad">0.351（高于基线 4.7pp）</td><td class="good">对照组回归的是优质用户；实验组剩余池风险浓缩</td></tr>
+<tr><td>第三周</td><td>0.236</td><td>0.334</td><td>小样本，实验组仍偏高</td></tr>
+<tr><td>21 天后</td><td>0.355</td><td>0.377</td><td>小样本，两组均差</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>验证结论（核心假设成立）：</strong>对照组第二周回归用户高息率 <strong>0.220</strong>，显著低于其基线 0.310——他们是自然回流的优质用户，因此第二周盈利率仍 +16.92%；实验组第二周回归用户高息率 <strong>0.351</strong>，显著高于其基线 0.304——券在第一周把优质用户提前抽走后，剩余用户池风险浓缩，因此第二周盈利率 -11.08%。<strong>「优质用户前置消化」假设验证通过。</strong></div>
+<div class="table"><table><caption>验证三：「犹豫型用户」假设被否定</caption><thead><tr><th>第二周回归用户（第一周行为）</th><th>对照组 (69人)</th><th>实验组 (69人)</th></tr></thead><tbody>
+<tr><td>第一周活跃人数占比</td><td>65%</td><td>67%</td></tr>
+<tr><td>第一周活跃天数</td><td>1.70</td><td>1.88</td></tr>
+<tr><td>第一周浏览提单页次数</td><td>3.03</td><td>3.20</td></tr>
+<tr><td>第一周确认提单次数</td><td>0.000</td><td>0.014</td></tr>
+</tbody></table></div>
+<p class="desc" style="margin-bottom:10px">两组几乎无差异——「第一周看过提单页但没提」是所有第二周回归者的共同特征，不是实验组特有，不构成分组差异点。</p>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>券的作用是「时间加速」，不是「行为区分」。</h3><p>券把优质用户提前集中到第一周（实验组第一周回归者历史逾期 0.23，低于基线 0.28），而不是改变用户的犹豫行为。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>剩余池浓缩效应。</h3><p>优质用户被提前抽走后，实验组剩余池中高息（高风险定价）用户占比被动上升——第二周回归者高息率 0.351 vs 基线 0.304。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>对照组无加速器，优质用户自然释放。</h3><p>对照组第二周回归者高息率 0.220（全场最低），仍是好用户，因此其质量恶化被推迟到第三周。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>完整机制闭环。</h3><p>实验组质量曲线「好→差→差」与对照组「好→好→差」形状相同，只是实验组整体前移一个窗口——与盈利率观察完全吻合。</p></div></div><div class="insight"><div class="idx">05</div><div><h3>补充画像：实验组晚回归者是「高频高息」风险用户。</h3><p>历史借款次数显示：第一周两组一致（2.93 次）；券过期后对照组回落到基线（2.57~2.77，低频慢热型），实验组不降反升（3.41/3.45 次，高频）。结合高息率（实验组晚回归 0.33~0.35 vs 对照组 0.22~0.24），实验组晚回归用户 = 借款次数多但风险定价高的用户——降息券对高频借款用户吸引力大，优质高频用户第一周被拉走，剩下的高频高息用户因借款惯性持续回归，拖累后续窗口盈利。</p></div></div></section>
+
+<h2>四、核心结论汇总</h2>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>券的拉动只存在第一周（券有效期内）。</h3><p>第一周提单率实验组 32.73% vs 对照组 25.27%（+7.46pp）；第二周 +1.30pp、第三周 +1.45pp、21 天后 +2.94pp。券过期后两组待遇一致，转化差异大幅收窄。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>回归越晚、用户质量越差（总体单调恶化）。</h3><p>逾期率随回归时间单调上升（第一周 27.63% → 21 天后 47.50%），盈利率从 19.60% 一路降到 -45.44%。第三周起订单整体亏损。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>第二周是质量分水岭：实验组先转亏。</h3><p>第二周对照组盈利率仍 +16.92%（赚 4.8 万），实验组转负 -11.08%（亏 2.2 万），实验组逾期率 40.54% 反超对照组的 28.75%。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>券的长期副作用：优质用户被前置消化。</h3><p>券把「会回来」的优质用户集中在第一周转化（第一周实验组逾期率反而更低：25.65% vs 30.28%），导致实验组后续窗口的回归用户质量系统性变差——第二周起实验组的逾期率、盈利率全面差于对照组。</p></div></div><div class="insight"><div class="idx">05</div><div><h3>量利权衡净结果为负：放款额 +11.3%，盈利额 -62.6%。</h3><p>实验组放款 175 万 vs 对照组 157 万；但盈利额 2.4 万 vs 6.5 万。30% 降息削薄利差（盈利率 2.59% vs 7.92%），规模增量不足以弥补。</p></div></div><div class="insight"><div class="idx">06</div><div><h3>第三周及之后的回归用户是「坏账型」用户，应直接收紧。</h3><p>无论是否发过券，第三周起两组逾期率均超 44%、盈利率均深亏（-10% ~ -46%），继续向这批用户放款没有盈利空间。</p></div></div></section>
+
+<h2>五、策略建议</h2>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>资源聚焦第一周（券有效期），做足触达。</h3><p>第一周是唯一量质双优窗口（盈利率 19.60%），把召回触达、再营销、客服跟进全部压在第一周内完成，最大化券期转化。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>券过期后停止降息激励，改小额提额或 5% 档。</h3><p>第二周起两组待遇本已一致，无需再补贴；第二周回归的实验组用户盈利率 -11.08%，应停止 30% 档降息券，避免放大亏损。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>对第三周及以后回归用户升级风控。</h3><p>逾期率 44%+、盈利率 -10%~-46%，建议对召回日+14 天后首次提单的用户加审、压降额度或直接拒绝。</p></div></div><div class="insight"><div class="idx">D</div><div><h3>重新测算降息券档位，寻找量利平衡点。</h3><p>30% 降息使整体盈利率下降 5.33pp（7.92%→2.59%）。建议 AB 测试 10%/20% 档，以「第一周提单率增量 × 盈利率」最大化盈利额。</p></div></div></section>
+
+<h2>附录：完整 PGSQL</h2><p class="desc">以下代码覆盖本报告的用户构建、总和、分组、四周窗口与交叉统计。执行前请按实际需要调整统计截止日。</p>
+<details><summary>模块一：构建 7 月召回实验用户（4 批 T4 合并，含召回日）</summary><pre>-- ============================================================
+-- 数据源：no_apply_0716_0721_30pct / 0717_0722 / 0718_0723 / 0719_0724
+-- 召回日 = 表名最后一个日期（如 0716_0721 -&gt; 2026-07-21）
+-- ============================================================
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group,
+               DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT ab_group, COUNT(DISTINCT user_id) AS 用户数
+FROM t7
+GROUP BY ab_group
+ORDER BY ab_group;</pre></details>
+<details><summary>模块二：总和统计（整体漏斗 + 逾期率 + 盈利率）</summary><pre>-- 口径：盈利率 = (repaid_amt - remit_amt) / remit_amt
+--       仅计 is_remit=1 且 loan_status_code &lt;&gt; 5（排除在途）的订单
+--       逾期率 = status=8 / status in (7,8)（排除在途）
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END)   AS 提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 提单率,
+    COUNT(o.serial_id)                                                      AS 订单数,
+    COUNT(CASE WHEN o.is_remit = 1 THEN 1 END)                              AS 放款订单,
+    ROUND(SUM(CASE WHEN o.is_remit = 1 THEN o.remit_amt ELSE 0 END)::numeric, 2) AS 放款金额,
+    COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code = 8 THEN 1 END)   AS 逾期订单,
+    COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code IN (7,8) THEN 1 END) AS 到期订单,
+    ROUND(COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code = 8 THEN 1 END) * 100.0
+          / NULLIF(COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code IN (7,8) THEN 1 END), 0), 2) AS 逾期率,
+    ROUND((SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END))::numeric, 2) AS 盈利额,
+    ROUND((SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END)) * 100.0
+         / NULLIF(SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END), 0), 2) AS 盈利率
+FROM t7
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = t7.user_id
+      AND o.apply_date &gt;= t7.recall_date;</pre></details>
+<details><summary>模块三：按 ab_group 分组统计（对照组 / 实验组）</summary><pre>WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    t7.ab_group                                                             AS 分组,
+    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END)   AS 提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 提单率,
+    COUNT(o.serial_id)                                                      AS 订单数,
+    COUNT(CASE WHEN o.is_remit = 1 THEN 1 END)                              AS 放款订单,
+    ROUND(SUM(CASE WHEN o.is_remit = 1 THEN o.remit_amt ELSE 0 END)::numeric, 2) AS 放款金额,
+    ROUND(COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code = 8 THEN 1 END) * 100.0
+          / NULLIF(COUNT(CASE WHEN o.is_remit = 1 AND o.loan_status_code IN (7,8) THEN 1 END), 0), 2) AS 逾期率,
+    ROUND((SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END))::numeric, 2) AS 盈利额,
+    ROUND((SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END)) * 100.0
+         / NULLIF(SUM(CASE WHEN o.is_remit = 1 AND o.loan_status_code &lt;&gt; 5 THEN o.remit_amt ELSE 0 END), 0), 2) AS 盈利率
+FROM t7
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = t7.user_id
+      AND o.apply_date &gt;= t7.recall_date
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
+<details><summary>模块四：按四周窗口拆分（第一周 / 第二周 / 第三周 / 21天后）</summary><pre>-- 第一周 = 召回日 至 召回日+6（券有效期内，共 7 个自然日）
+-- 第二周 = 召回日+7 至 +13；第三周 = 召回日+14 至 +20；21天后 = 召回日+21 及之后
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+ords AS (
+    SELECT t7.user_id,
+           CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                THEN '第一周'
+                WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                THEN '第二周'
+                WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                THEN '第三周'
+                ELSE '21天后' END                                             AS win,
+           o.serial_id, o.is_remit, o.loan_status_code, o.remit_amt, o.repaid_amt
+    FROM t7
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t7.user_id
+     AND o.apply_date &gt;= t7.recall_date
+)
+SELECT
+    win                                                                     AS 窗口,
+    COUNT(DISTINCT user_id)                                                 AS 提单用户,
+    COUNT(serial_id)                                                        AS 订单数,
+    COUNT(CASE WHEN is_remit = 1 THEN 1 END)                                AS 放款订单,
+    ROUND(SUM(CASE WHEN is_remit = 1 THEN remit_amt ELSE 0 END)::numeric, 2) AS 放款金额,
+    ROUND(COUNT(CASE WHEN is_remit = 1 AND loan_status_code = 8 THEN 1 END) * 100.0
+          / NULLIF(COUNT(CASE WHEN is_remit = 1 AND loan_status_code IN (7,8) THEN 1 END), 0), 2) AS 逾期率,
+    ROUND((SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END))::numeric, 2) AS 盈利额,
+    ROUND((SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END)) * 100.0
+         / NULLIF(SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END), 0), 2) AS 盈利率
+FROM ords
+GROUP BY win
+ORDER BY CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END;</pre></details>
+<details><summary>模块五：AB 组 × 四周交叉统计（窗口优先）</summary><pre>WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+ords AS (
+    SELECT t7.ab_group, t7.user_id,
+           CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                THEN '第一周'
+                WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                THEN '第二周'
+                WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                THEN '第三周'
+                ELSE '21天后' END                                             AS win,
+           o.serial_id, o.is_remit, o.loan_status_code, o.remit_amt, o.repaid_amt
+    FROM t7
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t7.user_id
+     AND o.apply_date &gt;= t7.recall_date
+)
+SELECT
+    win                                                                     AS 窗口,
+    ab_group                                                                AS 分组,
+    COUNT(DISTINCT user_id)                                                 AS 提单用户,
+    COUNT(serial_id)                                                        AS 订单数,
+    COUNT(CASE WHEN is_remit = 1 THEN 1 END)                                AS 放款订单,
+    ROUND(SUM(CASE WHEN is_remit = 1 THEN remit_amt ELSE 0 END)::numeric, 2) AS 放款金额,
+    ROUND(COUNT(CASE WHEN is_remit = 1 AND loan_status_code = 8 THEN 1 END) * 100.0
+          / NULLIF(COUNT(CASE WHEN is_remit = 1 AND loan_status_code IN (7,8) THEN 1 END), 0), 2) AS 逾期率,
+    ROUND((SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END))::numeric, 2) AS 盈利额,
+    ROUND((SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN repaid_amt ELSE 0 END)
+         - SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END)) * 100.0
+         / NULLIF(SUM(CASE WHEN is_remit = 1 AND loan_status_code &lt;&gt; 5 THEN remit_amt ELSE 0 END), 0), 2) AS 盈利率
+FROM ords
+GROUP BY win, ab_group
+ORDER BY CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END,
+         ab_group;</pre></details>
+<details><summary>模块六：机制验证——各窗口回归用户历史特征对比</summary><pre>-- 验证「优质用户前置消化」假设：
+--   1) 基线平衡：两组历史特征应接近
+--   2) 第二周回归用户的历史高息率：对照组应低于基线、实验组应高于基线
+--   3) 第二周回归用户在第一周的行为：两组应无差异（否定「犹豫型」假设）
+WITH feat AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date,
+           total_apply_rnb, total_remit_rnb, total_remit_amt, als, max_over_due, overdue_cnt,
+           overdue_term_cnt, utilization_rate, high_interest_rate, active_days_cnt, churn_days
+    FROM wangchuanliang.no_apply_0716_0721_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22',
+           total_apply_rnb, total_remit_rnb, total_remit_amt, als, max_over_due, overdue_cnt,
+           overdue_term_cnt, utilization_rate, high_interest_rate, active_days_cnt, churn_days
+    FROM wangchuanliang.no_apply_0717_0722_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23',
+           total_apply_rnb, total_remit_rnb, total_remit_amt, als, max_over_due, overdue_cnt,
+           overdue_term_cnt, utilization_rate, high_interest_rate, active_days_cnt, churn_days
+    FROM wangchuanliang.no_apply_0718_0723_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24',
+           total_apply_rnb, total_remit_rnb, total_remit_amt, als, max_over_due, overdue_cnt,
+           overdue_term_cnt, utilization_rate, high_interest_rate, active_days_cnt, churn_days
+    FROM wangchuanliang.no_apply_0719_0724_30pct
+),
+first_apply AS (
+    SELECT f.user_id, f.ab_group, f.recall_date,
+           MIN(o.apply_date) AS first_apply_date
+    FROM feat f
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = f.user_id
+     AND o.apply_date &gt;= f.recall_date
+    GROUP BY f.user_id, f.ab_group, f.recall_date
+),
+seg AS (
+    SELECT user_id, ab_group, recall_date,
+           CASE WHEN first_apply_date BETWEEN recall_date AND recall_date + 6
+                THEN 'W1'
+                WHEN first_apply_date BETWEEN recall_date + 7 AND recall_date + 13
+                THEN 'W2'
+                WHEN first_apply_date BETWEEN recall_date + 14 AND recall_date + 20
+                THEN 'W3'
+                ELSE 'W4' END AS first_win
+    FROM first_apply
+)
+-- 验证一/二：按首次提单窗口 × 分组 的历史特征
+SELECT
+    s.first_win                                                             AS 首次提单窗口,
+    f.ab_group                                                              AS 分组,
+    COUNT(*)                                                                AS 人数,
+    ROUND(AVG(f.overdue_cnt)::numeric, 2)                                   AS 历史逾期订单数,
+    ROUND(AVG(f.max_over_due)::numeric, 2)                                  AS 历史最大逾期天数,
+    ROUND(AVG(f.total_remit_rnb)::numeric, 2)                               AS 历史放款次数,
+    ROUND(AVG(f.total_apply_rnb)::numeric, 2)                               AS 历史提单次数,
+    ROUND(AVG(f.total_remit_amt)::numeric, 0)                               AS 历史放款金额,
+    ROUND(AVG(f.als)::numeric, 0)                                           AS 历史件均,
+    ROUND(AVG(f.utilization_rate)::numeric, 3)                              AS 历史额度使用率,
+    ROUND(AVG(f.high_interest_rate)::numeric, 3)                            AS 历史高息率,
+    ROUND(AVG(f.active_days_cnt)::numeric, 2)                               AS 历史活跃天数,
+    ROUND(AVG(f.churn_days)::numeric, 1)                                    AS 流失天数
+FROM seg s
+JOIN feat f
+  ON f.user_id = s.user_id
+ AND f.ab_group = s.ab_group
+ AND f.recall_date = s.recall_date
+GROUP BY s.first_win, f.ab_group
+ORDER BY CASE s.first_win WHEN 'W1' THEN 1 WHEN 'W2' THEN 2 WHEN 'W3' THEN 3 ELSE 4 END,
+         f.ab_group;
+
+-- 验证三：第二周首次提单用户在第一周（券期）的活跃行为对比
+WITH feat AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+    FROM wangchuanliang.no_apply_0716_0721_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+    FROM wangchuanliang.no_apply_0717_0722_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+    FROM wangchuanliang.no_apply_0718_0723_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+    FROM wangchuanliang.no_apply_0719_0724_30pct
+),
+first_apply AS (
+    SELECT f.user_id, f.ab_group, f.recall_date, MIN(o.apply_date) AS first_apply_date
+    FROM feat f
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = f.user_id
+     AND o.apply_date &gt;= f.recall_date
+    GROUP BY f.user_id, f.ab_group, f.recall_date
+),
+w2 AS (
+    SELECT user_id, ab_group, recall_date
+    FROM first_apply
+    WHERE first_apply_date BETWEEN recall_date + 7 AND recall_date + 13
+),
+w1_act AS (
+    SELECT w2.user_id, w2.ab_group,
+           COUNT(DISTINCT e.active_date)                                    AS w1_active_days,
+           COALESCE(SUM(e.newpage), 0)                                      AS w1_newpage,
+           COALESCE(SUM(e.newconfirm), 0)                                   AS w1_newconfirm
+    FROM w2
+    JOIN feat f ON f.user_id = w2.user_id AND f.ab_group = w2.ab_group
+    LEFT JOIN wangchuanliang.event_track e
+           ON e.user_id = w2.user_id
+          AND e.active_date BETWEEN f.recall_date AND f.recall_date + 6
+    GROUP BY w2.user_id, w2.ab_group
+)
+SELECT
+    ab_group                                                               AS 分组,
+    COUNT(*)                                                               AS 第二周回归人数,
+    COUNT(CASE WHEN w1_active_days &gt; 0 THEN 1 END)                        AS 第一周活跃人数,
+    ROUND(AVG(w1_active_days)::numeric, 2)                                 AS 第一周平均活跃天数,
+    ROUND(AVG(w1_newpage)::numeric, 2)                                     AS 第一周浏览提单页次数,
+    ROUND(AVG(w1_newconfirm)::numeric, 3)                                  AS 第一周确认提单次数
+FROM w1_act
+GROUP BY ab_group
+ORDER BY ab_group;</pre></details><details><summary>模块七：各窗口提单率（分母 = 各组实验用户总数）</summary><pre>-- 窗口提单率 = 窗口内提单用户 / 组内实验用户总数
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    t7.ab_group                                                             AS 分组,
+    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                         THEN t7.user_id END)                               AS 第一周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第一周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                         THEN t7.user_id END)                               AS 第二周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第二周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                         THEN t7.user_id END)                               AS 第三周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第三周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
+                         THEN t7.user_id END)                               AS 21天后提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 21天后提单率
+FROM t7
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = t7.user_id
+      AND o.apply_date &gt;= t7.recall_date
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
+<footer class="foot">口径说明：召回日 = 各表名最后一个日期（07-21 / 07-22 / 07-23 / 07-24）；第一周 = 召回日至召回日+6（券有效期 7 天，仅实验组享 30% 降息券），第二周 = +7~+13，第三周 = +14~+20，21 天后 = +21 及之后。<br>盈利率 = (repaid_amt − remit_amt) / remit_amt，仅计 is_remit=1 且 loan_status_code ≠ 5（排除在途）的订单；逾期率 = status=8 / status∈(7,8)。21 天后窗口观测时长不一且到期样本少，其逾期率/盈利率仅供参考。</footer>
+</main><script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const W=['第一周','第二周','第三周','21天后'];
+const lineOpt=(min,max)=>({...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{callback:v=>v+'%'}}}});
+new Chart(document.getElementById('rateLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组提单率 %',data:[25.27,14.76,13.85,20.24],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组提单率 %',data:[32.73,16.06,15.30,23.18],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(0,40)});
+new Chart(document.getElementById('profitLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组盈利率 %',data:[21.95,16.92,-34.92,-46.40],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组盈利率 %',data:[17.90,-11.08,-10.19,-44.56],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(-50,30)});
+new Chart(document.getElementById('odLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组逾期率 %',data:[30.28,28.75,44.68,43.75],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组逾期率 %',data:[25.65,40.54,45.00,50.00],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(0,55)});
+new Chart(document.getElementById('remitBar'),{type:'bar',data:{labels:W,datasets:[{label:'对照组放款金额（万）',data:[42.38,36.19,25.19,53.46],backgroundColor:'#94a3b8',borderRadius:6},{label:'实验组放款金额（万）',data:[60.56,26.20,30.36,57.82],backgroundColor:'#43c7e7',borderRadius:6}]},options:base});
+new Chart(document.getElementById('verifyHigh'),{type:'line',data:{labels:['基线','第一周','第二周','第三周','21天后'],datasets:[{label:'对照组高息率',data:[0.310,0.287,0.220,0.236,0.355],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组高息率',data:[0.304,0.290,0.351,0.334,0.377],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(3)}}},scales:{...base.scales,y:{...base.scales.y,min:0.15,max:0.45}}}});
+new Chart(document.getElementById('verifyOd'),{type:'line',data:{labels:['基线','第一周','第二周','第三周','21天后'],datasets:[{label:'对照组历史逾期订单数',data:[0.30,0.33,0.45,0.20,0.18],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组历史逾期订单数',data:[0.28,0.23,0.23,0.42,0.33],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:base});
+</script></body></html>

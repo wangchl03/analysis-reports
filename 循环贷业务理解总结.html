@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>循环贷业务理解总结</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --brand: #2563eb;
+    --brand-soft: #eff6ff;
+    --warn: #d97706;
+    --warn-soft: #fffbeb;
+    --danger: #dc2626;
+    --danger-soft: #fef2f2;
+    --good: #16a34a;
+    --good-soft: #f0fdf4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.75;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 40px 40px;
+    margin-bottom: 24px;
+  }
+  header.hero h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: 1px; }
+  header.hero p { margin: 0; opacity: .9; font-size: 15px; }
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .toc h2 { font-size: 15px; margin: 0 0 10px; color: var(--muted); letter-spacing: 1px; }
+  .toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 32px; }
+  .toc a { color: var(--brand); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  section h2 {
+    font-size: 20px;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--brand-soft);
+  }
+  section h3 { font-size: 16px; margin: 22px 0 10px; color: #111827; }
+  section h4 { font-size: 14px; margin: 16px 0 8px; color: #374151; }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .tag.blue { background: var(--brand-soft); color: var(--brand); }
+  .tag.amber { background: var(--warn-soft); color: var(--warn); }
+  .tag.red { background: var(--danger-soft); color: var(--danger); }
+  .tag.green { background: var(--good-soft); color: var(--good); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .card.blue { border-left: 4px solid var(--brand); background: var(--brand-soft); }
+  .card.amber { border-left: 4px solid var(--warn); background: var(--warn-soft); }
+  .card.red { border-left: 4px solid var(--danger); background: var(--danger-soft); }
+  .card.green { border-left: 4px solid var(--good); background: var(--good-soft); }
+  .card h4 { margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: #f9fafb; font-weight: 600; }
+  code {
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 13px;
+    color: #be123c;
+  }
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; }
+  .keyformula {
+    background: var(--good-soft);
+    border: 1px dashed var(--good);
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 14px 0;
+  }
+  .note { color: var(--muted); font-size: 13px; }
+  .divider { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>循环贷业务理解总结</h1>
+  <p>产品规则 · 数据模型 · 核心指标口径 · 风险机理 · 盈利权衡</p>
+</header>
+
+<div class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#s1">循环贷产品核心规则</a></li>
+    <li><a href="#s2">循环贷的商业价值与内在矛盾</a></li>
+    <li><a href="#s3">核心风险因素：逾期两笔</a></li>
+    <li><a href="#s4">数据模型与表结构</a></li>
+    <li><a href="#s5">关键指标口径</a></li>
+    <li><a href="#s6">红包（券）体系</a></li>
+    <li><a href="#s7">还款行为与逾期预测框架</a></li>
+    <li><a href="#s8">盈利分析注意事项</a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<section id="s1">
+  <h2>一、循环贷产品核心规则</h2>
+
+  <h3>1.1 基础准入条件（Eligibility）</h3>
+  <ul>
+    <li><span class="tag blue">用户资质</span>仅针对系统评估的「优质用户」开放。</li>
+    <li><span class="tag blue">前置触发点</span>当前一笔<strong>在途订单</strong>的还款进度达到或超过 <strong>50%</strong> 时，用户获得开通循环贷的资格。</li>
+  </ul>
+  <table>
+    <tr><th>示例</th><th>产品期数</th><th>触发条件</th><th>进度计算</th></tr>
+    <tr><td>示例 A</td><td>3 期产品</td><td>结清第 2 期后</td><td>2/3 &gt; 50%</td></tr>
+    <tr><td>示例 B</td><td>4 期产品</td><td>结清第 2 期后</td><td>2/4 = 50%</td></tr>
+  </table>
+
+  <h3>1.2 在途订单（Outstanding Orders）</h3>
+  <ul>
+    <li><strong>含义</strong>：用户处于还款阶段、尚未完全结清的贷款订单。</li>
+    <li><strong>状态判定</strong>：只要有一笔订单未结清，用户即处于「在途状态」；当所有订单全部结清，用户转为「非在途状态」。</li>
+  </ul>
+
+  <h3>1.3 循环贷判定逻辑（Cycle Logic）</h3>
+  <ul>
+    <li><span class="tag green">循环贷订单</span>必须在「拥有在途订单」的前提下，再次申请并成功发放的贷款，才被定义为循环贷订单。</li>
+    <li><span class="tag amber">非循环贷订单</span>用户结清所有贷款（无在途订单）后，再次申请并获得的贷款，判定为普通订单（非循环贷）。</li>
+  </ul>
+
+  <h3>1.4 在途订单上限（Cap Limit）</h3>
+  <ul>
+    <li><strong>数量限制</strong>：同一用户最多只能同时拥有 <strong>两笔在途订单</strong>。</li>
+    <li><strong>动态控制</strong>：
+      <ul>
+        <li>已有两笔在途时，系统自动冻结其循环贷开通资格。</li>
+        <li>必须先完全结清其中一笔，使在途数降至 1 笔，且该笔订单还款进度 ≥ 50%，方可申请下一笔循环贷。</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <h2>二、循环贷的商业价值与内在矛盾</h2>
+
+  <div class="grid">
+    <div class="card green">
+      <h4>价值（Benefits）</h4>
+      <ul>
+        <li><strong>避免用户流失</strong>：用户结清后处于非在途状态，再贷转化困难；循环贷在未结清时即放下一笔，直接把用户转化为下一笔贷款用户，提升转化率。</li>
+        <li><strong>筛选更多优质客户</strong>：贷款次数越多的用户资质越好，循环贷提高每次转化率，筛出更多能贷更多次的优质客户，带来更多利润。</li>
+      </ul>
+    </div>
+    <div class="card red">
+      <h4>弊端（Drawbacks）</h4>
+      <ul>
+        <li><strong>增加逾期率</strong>：上一笔还到一半即借下一笔，若上一笔随后停还即逾期，下一笔循环贷会<strong>连带逾期</strong>，额外增加一笔逾期订单。</li>
+        <li><strong>资质差的用户也转化</strong>：这类用户立刻逾期，产生「逾期两笔」，拉低盈利率。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="keyformula">最终目标：盈利额 = 放款金额 × 盈利率</div>
+  <p>循环贷通过<strong>牺牲盈利率</strong>（逾期率上升）来<strong>增加放款金额</strong>（转化率、订单量上升），最终看盈利额是否净增。这是一个「规模」与「效率」的矛盾状态。</p>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <h2>三、核心风险因素：逾期两笔</h2>
+
+  <h3>3.1 机理</h3>
+  <ul>
+    <li>开通循环贷后，用户拥有<strong>两笔在途订单</strong>。</li>
+    <li>若第一笔订单逾期，第二笔循环贷也会<strong>连带逾期</strong>，产生「一个用户逾期两笔」的情况，损失最大。</li>
+    <li>不给循环贷资格时，用户上一笔逾期后即失去贷款资格，只会逾期一笔。</li>
+    <li><strong>结论</strong>：每次贷款中「逾期两笔用户」的数量 / 占每次贷款总用户的占比，对盈利率有关键影响。</li>
+  </ul>
+
+  <h3>3.2 循环贷用户的定义</h3>
+  <ul>
+    <li>在用户<strong>整个生命周期</strong>中，只要有一笔订单是循环贷订单，该用户即为「循环贷用户」。</li>
+    <li>循环贷用户同时包含<strong>循环贷订单</strong>与<strong>非循环贷订单</strong>。</li>
+    <li>首贷（第一笔贷款）<strong>都不是循环贷订单</strong>，最早从第二笔订单开始才可能出现循环贷订单。</li>
+  </ul>
+
+  <h3>3.3 资质与开通时序</h3>
+  <ul>
+    <li>资质好的用户：第二笔订单即开通循环贷资格。</li>
+    <li>资质一般的用户：可能第六笔订单才开通。</li>
+    <li>资质差的用户：永远都不会开通循环贷资格。</li>
+    <li>第二笔必须是<strong>在首贷结清前</strong>贷出才是循环贷；若首贷已结清再贷第二笔，则为非循环贷。</li>
+  </ul>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <h2>四、数据模型与表结构</h2>
+
+  <h3>4.1 表清单</h3>
+  <table>
+    <tr><th>表名</th><th>角色</th><th>关键字段</th></tr>
+    <tr>
+      <td><code>order_loan_f_v2_copy</code></td>
+      <td>订单表</td>
+      <td><code>serial_id</code>, <code>user_id</code>, <code>apply_amt</code>(提单金额), <code>apply_date</code>, <code>remit_date</code>(放款), <code>is_remit</code>, <code>loan_status_code</code>, <code>overdue_days</code>, <code>total_term</code>, <code>loan_type</code>(firstloan/reloan)</td>
+    </tr>
+    <tr>
+      <td><code>order_vir_f_copy</code></td>
+      <td>获额表</td>
+      <td><code>serial_id</code>, <code>vir_date</code>(获额日期), <code>max_credit_apply_amt</code>, <code>max_risk_credit_amount</code></td>
+    </tr>
+    <tr>
+      <td><code>side_recycle_type_copy</code></td>
+      <td>循环贷类型表</td>
+      <td><code>serial_id</code>, <code>recycle_type</code>（<code>2</code>=循环贷订单）</td>
+    </tr>
+    <tr>
+      <td><code>repayment_plan_v2_copy</code></td>
+      <td>分期 / 还款计划表</td>
+      <td><code>serial_id</code>, <code>current_term</code>, <code>overdue_days_period</code>(单期逾期天数), <code>repaid_amt_period</code>, <code>due_date_period</code>, <code>repaid_date_period</code>, <code>is_due_period</code>, <code>is_repaid_period</code></td>
+    </tr>
+    <tr>
+      <td><code>repayment_record_copy</code></td>
+      <td>还款记录表</td>
+      <td><code>user_id</code>, <code>serial_id</code>, <code>to_timestamp</code>, <code>amount</code>, <code>total_term</code></td>
+    </tr>
+    <tr>
+      <td><code>coupon_user_detail_copy</code></td>
+      <td>红包表</td>
+      <td><code>user_id</code>, <code>serial_id</code>, <code>coupon_no</code>, <code>type</code>, <code>coupon_amount</code>, <code>current_term</code>, <code>create_time</code></td>
+    </tr>
+  </table>
+
+  <h3>4.2 表间关联</h3>
+  <ul>
+    <li>订单 / 获额 / 循环贷类型：通过 <code>serial_id</code> 关联（三表均一对一）。</li>
+    <li>订单与红包：通过 <code>serial_id</code> + <code>current_term</code> 关联（一笔订单每一期对应一条红包记录）。</li>
+  </ul>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <h2>五、关键指标口径</h2>
+
+  <h3>5.1 获额额度逻辑</h3>
+  <pre><code>case
+  when recycle_type = 2 or vir_date >= '2025-04-01'
+       then coalesce(max_credit_apply_amt, max_risk_credit_amount)
+  when recycle_type &lt;&gt; 2
+       then coalesce(max_risk_credit_amount, max_credit_apply_amt)
+  else 0
+end</code></pre>
+  <ul>
+    <li><span class="tag blue">2025-04-01 之后</span>所有订单获额额度 = <code>max_credit_apply_amt</code>。</li>
+    <li><span class="tag green">2025-04-01 之前</span>循环贷订单（recycle_type=2）获额额度 = <code>max_credit_apply_amt</code>；非循环贷订单获额额度 = <code>max_risk_credit_amount</code>。</li>
+  </ul>
+
+  <h3>5.2 额度使用率</h3>
+  <div class="keyformula">额度使用率 = 提单金额（apply_amt） / 获额金额（获额额度）</div>
+  <p>漏斗关系：<strong>获额订单量 &gt; 提单订单量 &gt; 放款订单量</strong>（获额后不一定提单，提单后不一定放款）。可按<strong>放款月</strong>（remit_date）分组求不同月份的额度使用率。</p>
+
+  <h3>5.3 订单状态语义</h3>
+  <table>
+    <tr><th>loan_status_code</th><th>含义</th></tr>
+    <tr><td><code>5</code></td><td>在途订单（未到期、未逾期）</td></tr>
+    <tr><td><code>7</code></td><td>结清订单</td></tr>
+    <tr><td><code>8</code></td><td>逾期订单</td></tr>
+  </table>
+  <table>
+    <tr><th>overdue_days</th><th>含义</th></tr>
+    <tr><td><code>&lt;= 0</code></td><td>正常结清，未出现过逾期</td></tr>
+    <tr><td><code>&gt; 0</code></td><td>有过逾期经历（若已结清状态显示 7；若未结清状态显示 8，仍处逾期）</td></tr>
+  </table>
+
+  <h3>5.4 真逾期 / 假逾期用户</h3>
+  <div class="grid">
+    <div class="card red">
+      <h4>真逾期用户</h4>
+      <p>存在订单状态为 <code>8</code> 的订单。</p>
+    </div>
+    <div class="card amber">
+      <h4>假逾期用户</h4>
+      <p>不存在订单状态为 <code>8</code> 的订单，但存在 <code>overdue_days &gt; 0</code> 的订单（即之前逾期过、后来结清，状态由 8 变 7），这些用户又具备提单资格。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <h2>六、红包（券）体系</h2>
+
+  <h3>6.1 三类红包</h3>
+  <table>
+    <tr><th>type</th><th>名称</th><th>说明</th></tr>
+    <tr><td><code>3</code></td><td>降息券</td><td>对利息减免，主要是 10% 息费减免，另有 5% / 20% / 30%</td></tr>
+    <tr><td><code>4</code></td><td>提额券</td><td>额度提升，如 5% / 10% / 20% 提额</td></tr>
+    <tr><td><code>2</code></td><td>还款优惠券</td><td>提前还款享受部分折扣</td></tr>
+  </table>
+
+  <h3>6.2 红包与订单的对应关系</h3>
+  <ul>
+    <li><code>coupon_no</code> 唯一标识一个红包；<code>coupon_amount</code> 为红包金额。</li>
+    <li>分期订单会产生多条记录（每期一条），同笔订单的 <code>user_id</code>、<code>serial_id</code>、<code>coupon_no</code>、<code>create_time</code> 相同，用 <code>current_term</code> 区分期数。</li>
+    <li><span class="tag blue">type=3 降息券</span>：每笔订单只有一个红包（<code>coupon_no</code> 唯一）。</li>
+    <li><span class="tag blue">type=4 提额券</span>：每笔订单只有一个红包（<code>coupon_no</code> 唯一）。</li>
+    <li><span class="tag amber">type=2 还款优惠券</span>：一笔订单可有多个红包（<code>coupon_no</code> 不唯一）。</li>
+    <li><strong>一笔订单的红包金额</strong> = 各期红包金额之和，即 <code>sum(coupon_amount)</code>。</li>
+    <li>求「用降息券提单的订单」的筛选条件为 <code>type = 3</code>。</li>
+  </ul>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+  <h2>七、还款行为与逾期预测框架</h2>
+
+  <h3>7.1 分期订单单期逾期判定</h3>
+  <p><code>repayment_plan_v2_copy.overdue_days_period &gt; 0</code> 代表该笔订单的某一期逾期了。</p>
+  <ul>
+    <li>例：一笔 4 期订单，前两期 <code>overdue_days_period &lt;= 0</code>、后两期 <code>&gt; 0</code>，说明用户前两期正常还款、后两期逾期。</li>
+  </ul>
+
+  <h3>7.2 多样化的还款行为</h3>
+  <ul>
+    <li>有的用户<strong>提前结清</strong>。</li>
+    <li>有的用户第一期正常还款，后面分期未还款而逾期。</li>
+    <li>有的用户逾期后再结清。</li>
+    <li>有的用户逾期后只还一部分、未结清，仍处逾期状态。</li>
+  </ul>
+
+  <h3>7.3 逾期预测的时点约束</h3>
+  <ul>
+    <li>首贷 3 期产品，第 2 期结清即授予循环贷资格。</li>
+    <li>因此要在<strong>第二期结清之前</strong>预测用户是否会逾期，可基于<strong>第一期还款特征</strong>。</li>
+    <li>所有用户行为数据（含活跃数据）均须基于<strong>第二期结清之前</strong>的数据进行预测。</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+  <h2>八、盈利分析注意事项</h2>
+
+  <ul>
+    <li>用户出现<strong>假逾期</strong>后，其后所有放款订单的盈利率分析：<strong>不能过滤状态为 8 的订单，要过滤状态为 5 的订单</strong>。</li>
+    <li>若用户假逾期回归后的<strong>第一笔放款订单状态是 8</strong>（即回归后立刻逾期），该笔订单盈利率很可能为负。</li>
+  </ul>
+
+  <hr class="divider">
+  <p class="note">本文档仅归纳业务常识与数据口径，作为后续循环贷盈利分析、逾期两笔影响分析、额度使用率分析等工作的基础框架。</p>
+</section>
+
+</div>
+</body>
+</html>
