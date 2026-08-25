@@ -81,7 +81,59 @@ SELECT ab_group, COUNT(DISTINCT user_id) AS 用户数
 FROM t7
 GROUP BY ab_group
 ORDER BY ab_group;</pre></details>
-<details><summary>模块二：汇总统计（到期订单 + 分期级，总和/分组）</summary><pre>-- 口径：
+<details><summary>模块二：各窗口提单率（分母 = 各组实验用户总数）</summary><pre>-- 窗口提单率 = 窗口内提单用户 / 组内实验用户总数
+-- 提单以 order_loan_f_v2_copy.apply_date 判定（不受到期口径影响）
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    t7.ab_group                                                             AS 分组,
+    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                         THEN t7.user_id END)                               AS 第一周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第一周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                         THEN t7.user_id END)                               AS 第二周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第二周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                         THEN t7.user_id END)                               AS 第三周提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第三周提单率,
+    COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
+                         THEN t7.user_id END)                               AS 21天后提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
+                         THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 21天后提单率,
+    -- 汇总（累计）提单率
+    COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END)   AS 累计提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 累计提单率
+FROM t7
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = t7.user_id
+      AND o.apply_date &gt;= t7.recall_date
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
+<details><summary>模块三：汇总统计（到期订单 + 分期级，总和/分组）</summary><pre>-- 口径：
 --   只统计已到期订单：due_date &lt; current_date（未到期订单不统计）
 --   分期级：repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period in (7,8)（排除在途5）
 --   盈利率 = (sum(repaid_amt_period) - sum(remit_amt_period)) / sum(remit_amt_period)
@@ -126,7 +178,7 @@ WHERE a.is_remit = 1
   AND a.loan_status_code_period IN (7, 8)
 GROUP BY t7.ab_group
 ORDER BY t7.ab_group;</pre></details>
-<details><summary>模块三：AB 组 × 四周窗口交叉（到期订单口径）</summary><pre>-- 第一周=召回日~+6（券期）；第二周=+7~+13；第三周=+14~+20；21天后=+21 起
+<details><summary>模块四：AB 组 × 四周窗口交叉（到期订单口径）</summary><pre>-- 第一周=召回日~+6（券期）；第二周=+7~+13；第三周=+14~+20；21天后=+21 起
 WITH t7 AS (
     SELECT user_id, ab_group, MIN(recall_date) AS recall_date
     FROM (
@@ -180,7 +232,7 @@ FROM ords
 GROUP BY ab_group, win
 ORDER BY ab_group,
          CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END;</pre></details>
-<details><summary>模块四：机制验证——历史特征（高息率/借款次数）按首次提单窗口</summary><pre>-- 历史特征口径不变
+<details><summary>模块五：机制验证——历史特征（高息率/借款次数）按首次提单窗口</summary><pre>-- 历史特征口径不变
 WITH feat AS (
     SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date,
            total_remit_rnb, high_interest_rate, overdue_cnt
@@ -221,58 +273,7 @@ FROM seg s
 JOIN feat f ON f.user_id = s.user_id AND f.ab_group = s.ab_group AND f.recall_date = s.recall_date
 GROUP BY s.first_win, f.ab_group
 ORDER BY s.first_win, f.ab_group;</pre></details>
-<details><summary>模块五：各窗口提单率（分母 = 各组实验用户总数）</summary><pre>-- 窗口提单率 = 窗口内提单用户 / 组内实验用户总数
--- 提单以 order_loan_f_v2_copy.apply_date 判定（不受到期口径影响）
-WITH t7 AS (
-    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
-    FROM (
-        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date
-        FROM wangchuanliang.no_apply_0716_0721_30pct
-        UNION ALL
-        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-22'
-        FROM wangchuanliang.no_apply_0717_0722_30pct
-        UNION ALL
-        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-23'
-        FROM wangchuanliang.no_apply_0718_0723_30pct
-        UNION ALL
-        SELECT churn_user_id::bigint, ab_group, DATE '2026-07-24'
-        FROM wangchuanliang.no_apply_0719_0724_30pct
-    ) x
-    GROUP BY user_id, ab_group
-)
-SELECT
-    t7.ab_group                                                             AS 分组,
-    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
-    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
-                         THEN t7.user_id END)                               AS 第一周提单用户,
-    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
-                         THEN t7.user_id END) * 100.0
-          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第一周提单率,
-    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
-                         THEN t7.user_id END)                               AS 第二周提单用户,
-    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13
-                         THEN t7.user_id END) * 100.0
-          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第二周提单率,
-    COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
-                         THEN t7.user_id END)                               AS 第三周提单用户,
-    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20
-                         THEN t7.user_id END) * 100.0
-          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 第三周提单率,
-    COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
-                         THEN t7.user_id END)                               AS 21天后提单用户,
-    ROUND(COUNT(DISTINCT CASE WHEN o.apply_date &gt;= t7.recall_date + 21
-                         THEN t7.user_id END) * 100.0
-          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 21天后提单率,
-    -- 汇总（累计）提单率
-    COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END)   AS 累计提单用户,
-    ROUND(COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END) * 100.0
-          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 累计提单率
-FROM t7
-LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
-       ON o.user_id = t7.user_id
-      AND o.apply_date &gt;= t7.recall_date
-GROUP BY t7.ab_group
-ORDER BY t7.ab_group;</pre></details>
+
 <footer class="foot">口径说明（本版为到期订单口径）：召回日 = 各表名最后一个日期（07-21 / 07-22 / 07-23 / 07-24）；第一周 = 召回日至召回日+6（券有效期 7 天，仅实验组享 30% 降息券），第二周 = +7~+13，第三周 = +14~+20，21 天后 = +21 及之后。<br>只统计<b>已到期订单</b>（due_date &lt; current_date，未到期订单不统计）；<b>分期级</b>统计（repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period ∈ (7,8)，排除在途 status=5）。<br>盈利率 = (Σrepaid_amt_period − Σremit_amt_period) / Σremit_amt_period；逾期率_金额/分期/订单 三个口径。第三周、21天后到期样本小（&lt;32 件），数值仅供参考。</footer>
 </main><script>
 Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
