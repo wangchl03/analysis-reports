@@ -51,13 +51,14 @@
 <h2>四、跨数据集验证：规律的条件性</h2><p class="desc">用另外两个召回数据集验证。结论：规律条件性成立——需要「激励足够强 + 用户池异质」，否则规律衰减、后移或消失。</p>
 <section class="grid g2"><article class="chart"><h3>0708 实验五窗口盈利率</h3><p>实验组第四周转负，对照组 28 天后才转负——前置消化规律弱复现。</p><div class="box short"><canvas id="c5"></canvas></div></article><article class="chart"><h3>4932 实验五窗口盈利率</h3><p>两组同步变化、全程为正——规律未复现（激励几乎无效）。</p><div class="box short"><canvas id="c6"></canvas></div></article></section>
 <div class="table"><table><caption>三数据集五窗口盈利率汇总</caption><thead><tr><th>数据集</th><th>分组</th><th>第一周</th><th>第二周</th><th>第三周</th><th>第四周</th><th>28 天后</th></tr></thead><tbody>
-<tr><td rowspan="2">no_apply 7/21</td><td>对照组</td><td class="good">+21.95%</td><td class="good">+16.92%</td><td class="bad">-34.92%</td><td class="bad">-46.40%</td><td>—</td></tr>
-<tr><td>实验组</td><td class="good">+17.90%</td><td class="bad">-11.08%</td><td class="bad">-10.19%</td><td class="bad">-44.56%</td><td>—</td></tr>
+<tr><td rowspan="2">no_apply 7/21</td><td>对照组</td><td class="good">+21.95%</td><td class="good">+16.92%</td><td class="bad">-34.92%</td><td class="bad">-58.52%*</td><td class="bad">样本未到期*</td></tr>
+<tr><td>实验组</td><td class="good">+17.90%</td><td class="bad">-11.08%</td><td class="bad">-10.19%</td><td class="bad">-52.37%*</td><td class="bad">样本未到期*</td></tr>
 <tr><td rowspan="2">0708 7/8</td><td>对照组</td><td class="good">+10.50%</td><td class="good">+11.03%</td><td class="good">+20.88%</td><td class="good">+3.71%</td><td class="bad">-29.13%</td></tr>
 <tr><td>实验组</td><td class="good">+15.22%</td><td class="good">+13.93%</td><td class="good">+4.38%</td><td class="bad">-10.24%</td><td class="bad">-23.36%</td></tr>
 <tr><td rowspan="2">4932 6/12</td><td>对照组</td><td class="good">+26.70%</td><td class="good">+30.36%</td><td class="good">+10.03%</td><td class="good">+26.85%</td><td class="good">+4.75%</td></tr>
 <tr><td>实验组</td><td class="good">+13.60%</td><td class="good">+28.85%</td><td class="good">+15.29%</td><td class="good">+17.06%</td><td class="good">+2.54%</td></tr>
 </tbody></table></div>
+<p class="desc" style="margin-top:6px">*no_apply 第四周（召回日+21~+27）为拆分口径，样本较小（对照组到期 22 笔、实验组 28 笔），盈利率仅供参考；no_apply 28 天后订单（召回日+28 起）截至统计日基本未到期（到期订单仅 0~1 笔），暂无可靠盈利率，待观察期成熟后补充。</p>
 <div class="callout"><strong>跨数据集联合结论：</strong>前置消化规律 <strong>no_apply 强成立</strong>（W2 vs W3 转负）、<strong>0708 弱成立</strong>（W4 vs 28天后转负，且基线不平衡）、<strong>4932 不成立</strong>（激励仅 +0.34pp 几乎无效 + 老用户高质量池）。规律成立的两个条件：①激励强度足够（真正前置拉动用户）；②用户池质量分化明显（有优质/劣质之分可被消化）。</div>
 
 <h2>五、「上一周活跃」信号：三个数据集与全量对比</h2><p class="desc">把「上周活跃 vs 不活跃」作为下一周提单订单的盈利信号，看它在召回场景与全量自然场景中的表现。</p>
