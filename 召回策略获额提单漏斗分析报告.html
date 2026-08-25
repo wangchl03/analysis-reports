@@ -19,7 +19,10 @@
 </tbody></table></div>
 <section class="grid g2"><article class="chart"><h3>月度获额通过率与提单率趋势</h3><p>两项指标逐月提升，8 月获额通过率 97.6%、提单率 52.3%。</p><div class="box"><canvas id="c1"></canvas></div></article><article class="chart"><h3>月度获额与提单用户规模</h3><p>8 月面向全量，获额用户 1,418、提单 724，规模为 6 月的 3 倍以上。</p><div class="box"><canvas id="c2"></canvas></div></article></section>
 
-<h2>三、分组明细：每日获额提单数据</h2>
+<h2>三、结论</h2>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>获额通过率逐月提升，触达效率持续改善。</h3><p>获额通过率 6月 94.5% → 7月 95.9% → 8月 97.6%，8 月环比提升 1.9pp。主要归因于 8 月剔除了较多风险用户、尤其对流失 90 天以上用户严格筛选，减少了无效/低质触达。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>前 7 日提单率逐月提升，8 月环比 +5.7pp。</h3><p>提单率 6月 36.0% → 7月 46.6% → 8月 52.3%。差异化减息券策略（高意愿用户给 10%、高评分低活跃用户给 40%）提升了转化效率。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>8 月规模与效率双升。</h3><p>8 月面向全量，获额用户 1,418、提单用户 724，规模约为 6 月的 3 倍、7 月的 1.6 倍，同时保持最高获额通过率和提单率——量质双优。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>后续观测节点。</h3><p>建议在召回后 14 日、21 日两个观测节点，进一步对比不同层级（提单意愿分级、模型分层）用户的获额提单数据，验证差异化券策略的持续性效果。</p></div></div></section>
+
+<h2>四、分组明细：每日获额提单数据</h2>
 <p class="desc">三组召回后前 7 天的每日获额、获额通过、提单数据。</p>
 <div class="table"><table><caption>6 月第一次测试（召回后前 7 天）</caption><thead><tr><th>获额日期</th><th>获额用户</th><th>获额通过用户</th><th>提单用户</th><th>获额通过率</th><th>提单率</th></tr></thead><tbody>
 <tr class="total"><td>总计</td><td>438</td><td>414</td><td>149</td><td>94.5%</td><td>36.0%</td></tr>
@@ -53,8 +56,6 @@
 </tbody></table></div>
 <section class="grid g2"><article class="chart"><h3>三组每日提单率对比（第 1~7 天）</h3><p>8 月整体提单率最高；各组最后一天获额用户集中但提单率回落。</p><div class="box"><canvas id="c3"></canvas></div></article><article class="chart"><h3>三组每日获额用户对比</h3><p>8 月每日获额用户规模显著高于前两组。</p><div class="box"><canvas id="c4"></canvas></div></article></section>
 
-<h2>四、结论</h2>
-<section class="note"><div class="insight"><div class="idx">01</div><div><h3>获额通过率逐月提升，触达效率持续改善。</h3><p>获额通过率 6月 94.5% → 7月 95.9% → 8月 97.6%，8 月环比提升 1.9pp。主要归因于 8 月剔除了较多风险用户、尤其对流失 90 天以上用户严格筛选，减少了无效/低质触达。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>前 7 日提单率逐月提升，8 月环比 +5.7pp。</h3><p>提单率 6月 36.0% → 7月 46.6% → 8月 52.3%。差异化减息券策略（高意愿用户给 10%、高评分低活跃用户给 40%）提升了转化效率。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>8 月规模与效率双升。</h3><p>8 月面向全量，获额用户 1,418、提单用户 724，规模约为 6 月的 3 倍、7 月的 1.6 倍，同时保持最高获额通过率和提单率——量质双优。</p></div></div><div class="insight"><div class="idx">04</div><div><h3>后续观测节点。</h3><p>建议在召回后 14 日、21 日两个观测节点，进一步对比不同层级（提单意愿分级、模型分层）用户的获额提单数据，验证差异化券策略的持续性效果。</p></div></div></section>
 
 <h2>附录：完整 PGSQL</h2><p class="desc">以下代码用于统计召回后前 7 天的获额、获额通过、提单数据（以 8 月为例，6/7 月替换数据源与召回日即可）。</p>
 <details><summary>模块一：召回后前 7 天获额提单漏斗</summary><pre>-- 口径：
