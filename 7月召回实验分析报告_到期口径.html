@@ -55,7 +55,7 @@
 <section class="note"><div class="insight"><div class="idx">A</div><div><h3>资源聚焦第一周（券有效期），做足触达。</h3><p>第一周是量质双优窗口：券期内实验组提单率 +7.46pp、盈利率 17.42%、逾期率最低（17.47%）。把召回触达、再营销、客服跟进全部压在第一周内完成。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>对第二周及以后回归用户升级风控。</h3><p>第二周实验组逾期率_订单 35.59%、盈利率仅 7.65%；建议对召回日+7 天后首次提单的用户（尤其实验组）加审、压降额度或减少补贴。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>降息券档位可维持，重点优化「精准投放」。</h3><p>到期口径下 30% 降息的直接成本仅 0.9pp 盈利率，且换回更低的逾期率——券的性价比尚可；优化方向从「降档位」转为「只对第一阶段活跃用户投放、对沉默用户不发券」。</p></div></div></section>
 
 <h2>附录：完整 PGSQL（到期订单口径）</h2><p class="desc">以下代码覆盖本报告的用户构建、汇总、分组、四周窗口与交叉统计，全部为到期订单 + 分期级口径。执行前请按实际需要调整统计截止日。</p>
-<details><summary>模块一：构建 7 月召回实验用户（4 批 T4 合并，含召回日）</summary><pre>-- ============================================================
+<details><summary>模块一：构建 7 月召回实验用户</summary><pre>-- ============================================================
 -- 数据源：no_apply_0716_0721_30pct / 0717_0722 / 0718_0723 / 0719_0724
 -- 召回日 = 表名最后一个日期（如 0716_0721 -&gt; 2026-07-21）
 -- ============================================================
@@ -81,7 +81,7 @@ SELECT ab_group, COUNT(DISTINCT user_id) AS 用户数
 FROM t7
 GROUP BY ab_group
 ORDER BY ab_group;</pre></details>
-<details><summary>模块二：各窗口提单率（分母 = 各组实验用户总数）</summary><pre>-- 窗口提单率 = 窗口内提单用户 / 组内实验用户总数
+<details><summary>模块二：各窗口提单率</summary><pre>-- 窗口提单率 = 窗口内提单用户 / 组内实验用户总数
 -- 提单以 order_loan_f_v2_copy.apply_date 判定（不受到期口径影响）
 WITH t7 AS (
     SELECT user_id, ab_group, MIN(recall_date) AS recall_date
@@ -133,7 +133,7 @@ LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
       AND o.apply_date &gt;= t7.recall_date
 GROUP BY t7.ab_group
 ORDER BY t7.ab_group;</pre></details>
-<details><summary>模块三：汇总统计（到期订单 + 分期级，总和/分组）</summary><pre>-- 口径：
+<details><summary>模块三：汇总统计</summary><pre>-- 口径：
 --   只统计已到期订单：due_date &lt; current_date（未到期订单不统计）
 --   分期级：repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period in (7,8)（排除在途5）
 --   盈利率 = (sum(repaid_amt_period) - sum(remit_amt_period)) / sum(remit_amt_period)
@@ -178,7 +178,7 @@ WHERE a.is_remit = 1
   AND a.loan_status_code_period IN (7, 8)
 GROUP BY t7.ab_group
 ORDER BY t7.ab_group;</pre></details>
-<details><summary>模块四：AB 组 × 四周窗口交叉（到期订单口径）</summary><pre>-- 第一周=召回日~+6（券期）；第二周=+7~+13；第三周=+14~+20；21天后=+21 起
+<details><summary>模块四：AB 组 × 四周窗口交叉</summary><pre>-- 第一周=召回日~+6（券期）；第二周=+7~+13；第三周=+14~+20；21天后=+21 起
 WITH t7 AS (
     SELECT user_id, ab_group, MIN(recall_date) AS recall_date
     FROM (
@@ -232,7 +232,7 @@ FROM ords
 GROUP BY ab_group, win
 ORDER BY ab_group,
          CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END;</pre></details>
-<details><summary>模块五：机制验证——历史特征（高息率/借款次数）按首次提单窗口</summary><pre>-- 历史特征口径不变
+<details><summary>模块五：机制验证——历史特征</summary><pre>-- 历史特征口径不变
 WITH feat AS (
     SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-07-21' AS recall_date,
            total_remit_rnb, high_interest_rate, overdue_cnt
