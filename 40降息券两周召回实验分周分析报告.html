@@ -35,10 +35,10 @@
 </tbody></table></div>
 <section class="note"><div class="insight"><div class="idx">01</div><div><h3>利息收入大幅缩水（主因，-13.1 万）。</h3><p>第二周正常结清订单只有 88 单（vs 第一周 120 单），且件均更小（6,123 vs 7,386）——「赚利息的盘子」又少又小。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>坏账损失没跟着缩小（只减 1.1 万）。</h3><p>第二周逾期单数少（26 vs 35），但逾期订单件均更大（7,941 vs 6,928）、回款率更低（22.37% vs 29.13%），单均损失更高（6,165 vs 4,910），总损失几乎追平第一周。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>复贷「高息高坏账」、新提单「低息低坏账」，净盈利率殊途同归。</h3><p>复贷老用户借高息产品（利息率 56.22%）但逾期金额占比高（36%）；新提单借低息小额（37.13%）但坏账占比低（24.6%）。两者净盈利率都落在 8.6% 附近——不能只看逾期率，要结合利息率和逾期金额结构。</p></div></div></section>
 
-<h2>四、使用券 vs 未使用券：券的价值与代价</h2><p class="desc">券期内（前两周）vs 券期外（后两周）对比，以及 30% 券实验的对照组数据，回答「券能否提升提单率、是否拖累盈利」。</p>
+<h2>四、使用券 vs 未使用券：券的价值与代价</h2><p class="desc">券期内（前两周）vs 券期外（两周后）对比，以及 30% 券实验的对照组数据，回答「券能否提升提单率、是否拖累盈利」。</p>
 <div class="table"><table><caption>40% 券测试：券期内 vs 券期外</caption><thead><tr><th>窗口</th><th>提单用户</th><th>提单率</th><th>到期订单</th><th>逾期率</th><th>盈利率</th></tr></thead><tbody>
 <tr><td>前两周（券期内）</td><td>252</td><td>25.20%</td><td>269</td><td class="good">22.68%</td><td>13.26%</td></tr>
-<tr><td>后两周（券期外）</td><td>287</td><td>28.70%</td><td>105</td><td>27.62%</td><td>13.54%</td></tr>
+<tr><td>两周后（券期外）</td><td>287</td><td>28.70%</td><td>105</td><td>27.62%</td><td>13.54%</td></tr>
 </tbody></table></div>
 <div class="table"><table><caption>30% 券实验（7 天券，参考报告）：券能否提升提单率、是否拖累盈利</caption><thead><tr><th>分组</th><th>第一周提单率</th><th>第一周盈利率</th><th>第二周盈利率</th></tr></thead><tbody>
 <tr><td>实验组（30%券）</td><td class="good">32.73%</td><td class="good">19.18%</td><td class="bad">7.48%</td></tr>
@@ -136,14 +136,14 @@ LEFT JOIN w1_users w1 ON w1.user_id = t.user_id
 WHERE o.apply_date BETWEEN '2026-07-23' AND '2026-07-29'
 GROUP BY 1
 ORDER BY 1;</pre></details>
-<details><summary>模块四：券期内 vs 券期外对比</summary><pre>-- 前两周 = 券期内（07-16~07-29）；后两周 = 券期外（07-30 起）
+<details><summary>模块四：券期内 vs 券期外对比</summary><pre>-- 前两周 = 券期内（07-16~07-29）；两周后 = 券期外（07-30 起）
 WITH test_users AS (
     SELECT DISTINCT churn_user_id::bigint AS user_id
     FROM wangchuanliang.user_40pct_discount_7_16
 )
 SELECT
     CASE WHEN o.apply_date <= '2026-07-29' THEN '前两周(券期内)'
-         ELSE '后两周(券期外)' END AS 窗口,
+         ELSE '两周后(券期外)' END AS 窗口,
     COUNT(DISTINCT t.user_id)                                             AS 提单用户数,
     ROUND(COUNT(DISTINCT t.user_id) * 100.0 / 1000, 2)                    AS 提单率,
     COUNT(CASE WHEN o.is_remit = 1 AND o.is_due = 1 THEN 1 END)           AS 到期订单数,
@@ -165,6 +165,6 @@ const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{b
 const W=['第一周','第二周','第三周','第四周+'];
 new Chart(document.getElementById('c1'),{type:'bar',data:{labels:W,datasets:[{label:'提单率 %',data:[15.90,11.60,10.10,24.90],backgroundColor:'#43c7e7',borderRadius:6,yAxisID:'y'},{label:'盈利率 %',data:[16.32,8.64,12.69,15.22],backgroundColor:'#64dcae',borderRadius:6,yAxisID:'y1'}]},options:{...base,scales:{...base.scales,y:{...base.scales.y,max:30,ticks:{callback:v=>v+'%'}},y1:{...base.scales.y,position:'right',max:30,ticks:{callback:v=>v+'%'},grid:{drawOnChartArea:false}}}}});
 new Chart(document.getElementById('c2'),{type:'bar',data:{labels:['第一周','第二周'],datasets:[{label:'正常订单利息收入',data:[356017,224712],backgroundColor:'#64dcae',borderRadius:6},{label:'逾期订单本金损失',data:[-171853,-160289],backgroundColor:'#ff8d8d',borderRadius:6}]},options:base});
-new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['前两周(券期内)','后两周(券期外)'],datasets:[{label:'提单率 %',data:[25.20,28.70],backgroundColor:'#43c7e7',borderRadius:6},{label:'盈利率 %',data:[13.26,13.54],backgroundColor:'#64dcae',borderRadius:6},{label:'逾期率 %',data:[22.68,27.62],backgroundColor:'#f68ab0',borderRadius:6}]},options:base});
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['前两周(券期内)','两周后(券期外)'],datasets:[{label:'提单率 %',data:[25.20,28.70],backgroundColor:'#43c7e7',borderRadius:6},{label:'盈利率 %',data:[13.26,13.54],backgroundColor:'#64dcae',borderRadius:6},{label:'逾期率 %',data:[22.68,27.62],backgroundColor:'#f68ab0',borderRadius:6}]},options:base});
 new Chart(document.getElementById('c4'),{type:'bar',data:{labels:['两周券第二周(40%券)','一周券第二周(30%券实验组)','无券第二周(30%券对照组)'],datasets:[{label:'第二周盈利率 %',data:[8.64,7.48,19.59],backgroundColor:['#ff8d8d','#ff8d8d','#64dcae'],borderRadius:7}]},options:{...base,plugins:{...base.plugins,legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,max:25,ticks:{callback:v=>v+'%'}}}}});
 </script></body></html>
