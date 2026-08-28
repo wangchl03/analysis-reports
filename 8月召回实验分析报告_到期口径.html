@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8月召回实验分析报告（到期订单口径）</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:37px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px;line-height:1.35}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 10px 28px rgba(0,0,0,.13)}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:330px;position:relative}.short{height:285px}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.7}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0;align-items:flex-start}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px;line-height:1.3}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:#ff8d8d;font-weight:750}tr.w1 td{background:rgba(21,72,112,.5)}tr.w2 td{background:rgba(11,45,74,.55)}tr.w3 td{background:rgba(21,72,112,.5)}tr.total td{background:#0e3453;font-weight:800}details{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:#092640}summary{cursor:pointer;padding:17px 20px;font-size:17px;font-weight:750;color:#e5f5ff}pre{margin:0;padding:0 20px 24px;overflow:auto;color:#d7edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">8 月流失用户召回实验专项分析 · 到期订单口径</div><h1>8 月召回实验分析报告<br>（4 批 T4 合并 · 到期订单口径）</h1><p>统计期间：2026-08-04 ~ 08-29　·　报告生成时间：2026 年 8 月 29 日</p><span class="tag">召回日 08-04 ~ 08-07 · 30% 降息券 · 观察期约 3 周（到期比例偏低，盈利率为早期快照）</span></header>
+
+<h2>核心结论</h2><p class="desc">4 批 T4 用户合并（no_apply_0730_0804 / 0731_0805 / 0801_0806 / 0802_0807），召回日 08-04~08-07，共 1,658 人（对照 827 / 实验 831）。盈利率 = (Σrepaid−Σremit)/Σremit（is_remit=1 且 is_due=1，分期级）；逾期率 = status=8 / is_due=1。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">召回实验用户</div><div class="num cyan">1,658</div><div class="sub">对照组 827 · 实验组 831（30%降息券）</div></article><article class="card"><div class="label">提单率提升</div><div class="num green">+3.74pp</div><div class="sub">实验组 50.78% vs 对照组 47.04%</div></article><article class="card"><div class="label">到期口径盈利率</div><div class="num pink">5.76% vs 24.97%</div><div class="sub">实验组远低于对照组（早期快照）</div></article><article class="card"><div class="label">观察期提醒</div><div class="num amber">仅 30% 到期</div><div class="sub">放款 502/509，到期仅 165/151 笔</div></article></section>
+
+<h2>一、总体概览：总和与 AB 组对比（到期订单口径）</h2><p class="desc">⚠️ 观察期仅约 3 周（08-04 召回至 08-27），放款订单中仅约 30% 已到期，盈利率/逾期率基于早期快照，与观察期更长的 7 月批次不可直接对比。</p>
+<div class="table"><table><caption>总体与分组的完整指标（召回日及之后放款、已到期订单，分期级）</caption><thead><tr><th>分组</th><th>用户数</th><th>提单用户</th><th>提单率</th><th>到期件数</th><th>到期人数</th><th>盈利率</th><th>逾期率_金额</th><th>逾期率_分期</th><th>逾期率_订单</th></tr></thead><tbody>
+<tr class="total"><td>总和</td><td>1,658</td><td>811</td><td>48.91%</td><td>257</td><td>219</td><td>14.78%</td><td>21.16%</td><td>27.18%</td><td>30.35%</td></tr>
+<tr><td>对照组（无动作）</td><td>827</td><td>389</td><td>47.04%</td><td>135</td><td>117</td><td class="good">24.97%</td><td class="good">15.04%</td><td class="good">20.24%</td><td class="good">25.19%</td></tr>
+<tr><td>实验组（30%降息券）</td><td>831</td><td>422</td><td class="good">50.78%</td><td>122</td><td>102</td><td class="bad">5.76%</td><td class="bad">26.57%</td><td class="bad">34.47%</td><td class="bad">36.07%</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>结论：</strong>①券提升了提单率（50.78% vs 47.04%，+3.74pp），但幅度小于 7 月批次（+6.59pp）。②到期口径下，实验组盈利率 5.76% 远低于对照组 24.97%（-19.21pp），且三个逾期率全面更高（订单 36.07% vs 25.19%）——与 7 月批次「实验组盈利率反超」的方向相反。③但需注意：仅 30% 订单到期，样本小（122/135 件），该差异可能受早期快照偏差影响，需更长观察期复核。</div>
+
+<h2>二、AB 组 × 四周窗口交叉（到期订单口径）</h2><p class="desc">窗口优先排列。第三周起到期订单极少（&lt;10 件），21 天后暂无到期订单，仅供参考。</p>
+<div class="table"><table><caption>按窗口优先的交叉指标</caption><thead><tr><th>窗口</th><th>分组</th><th>提单用户</th><th>提单率</th><th>历史借款次数</th><th>到期件数</th><th>盈利率</th><th>逾期率_金额</th><th>逾期率_订单</th></tr></thead><tbody>
+<tr class="w1"><td class="win" rowspan="2">第一周<br>（券有效期内）</td><td>对照组</td><td>244</td><td>29.50%</td><td>2.94</td><td>105</td><td class="good">21.54%</td><td class="good">16.06%</td><td>23.81%</td></tr>
+<tr class="w1"><td>实验组</td><td>269</td><td class="good">32.37%</td><td>3.01</td><td>95</td><td class="bad">4.76%</td><td class="bad">25.95%</td><td class="bad">33.68%</td></tr>
+<tr class="w2"><td class="win" rowspan="2">第二周<br>（券过期后）</td><td>对照组</td><td>148</td><td>17.90%</td><td>2.88</td><td>25</td><td class="good">42.44%</td><td class="good">8.77%</td><td>24.00%</td></tr>
+<tr class="w2"><td>实验组</td><td>135</td><td>16.25%</td><td>2.66</td><td>23</td><td class="good">15.21%</td><td class="bad">27.24%</td><td class="bad">43.48%</td></tr>
+<tr class="w3"><td class="win" rowspan="2">第三周</td><td>对照组</td><td>147</td><td>17.78%</td><td>2.52</td><td>5</td><td>21.37%</td><td>26.98%</td><td>60.00%</td></tr>
+<tr class="w3"><td>实验组</td><td>136</td><td>16.37%</td><td>3.08</td><td>4</td><td class="bad">-29.58%</td><td class="bad">53.89%</td><td>50.00%</td></tr>
+</tbody></table></div>
+<p class="desc" style="margin-top:6px">历史借款次数 = 召回前历史放款次数（基线：对照 2.58 / 实验 2.67）。21 天后窗口暂无到期订单。第三周到期件数仅 5/4 件，样本极小。</p>
+<section class="grid g2"><article class="chart"><h3>四周提单率趋势</h3><p>第一周实验组 +2.87pp；券过期后差距收窄。</p><div class="box"><canvas id="rateLine"></canvas></div></article><article class="chart"><h3>四周盈利率趋势（到期口径）</h3><p>实验组各窗口盈利率均低于对照组。</p><div class="box"><canvas id="profitLine"></canvas></div></article><article class="chart"><h3>四周逾期率_订单趋势</h3><p>实验组各窗口逾期率均高于对照组。</p><div class="box"><canvas id="odLine"></canvas></div></article><article class="chart"><h3>四周逾期率_金额趋势</h3><p>实验组第一周逾期率即高于对照组。</p><div class="box"><canvas id="amtOd"></canvas></div></article></section>
+<div class="callout"><strong>窗口结论：</strong>券的拉动集中在第一周（提单率 32.37% vs 29.50%，+2.87pp），第二周起差距收窄（16.25% vs 17.90%，实验组反而更低）。到期口径下，实验组各窗口盈利率均低于对照组、逾期率均更高——第一周实验组盈利率仅 4.76%（对照组 21.54%），差距悬殊。但到期样本小（95/105 件），需谨慎解读。</div>
+
+<h2>三、与 7 月批次的对比</h2><p class="desc">同一口径（到期订单、分期级），但两批次观察期不同：7 月批次召回 07-21~24（观察 5 周），8 月批次召回 08-04~07（观察 3 周）。</p>
+<div class="table"><table><caption>7 月 vs 8 月批次（实验组 vs 对照组，到期口径）</caption><thead><tr><th>批次</th><th>实验组提单率</th><th>对照组提单率</th><th>实验组盈利率</th><th>对照组盈利率</th><th>实验组逾期率_订单</th></tr></thead><tbody>
+<tr><td>7 月（07-21~24 召回）</td><td>56.36%</td><td>49.77%</td><td class="good">17.97%</td><td class="good">17.63%</td><td>27.87%</td></tr>
+<tr><td>8 月（08-04~07 召回）</td><td>50.78%</td><td>47.04%</td><td class="bad">5.76%</td><td class="good">24.97%</td><td class="bad">36.07%</td></tr>
+</tbody></table></div>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>提单率规律一致：券始终提升提单率。</h3><p>7 月 +6.59pp、8 月 +3.74pp，两批次都验证「券提升提单率」，只是 8 月幅度更小。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>盈利率方向相反，但 8 月观察期严重不足。</h3><p>7 月实验组盈利率 17.97% 略高于对照（降息换还款率覆盖让利）；8 月实验组 5.76% 远低于对照 24.97%。但 8 月仅 30% 订单到期，且实验组逾期订单可能更快暴露，早期快照倾向低估盈利。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>建议：待观察期成熟后再下结论。</h3><p>8 月批次需等到 9 月中下旬（观察 5~6 周、到期比例 ≥80%）后，盈利率/逾期率才可与 7 月批次对比。当前仅提单率结论稳健。</p></div></div></section>
+
+<h2>四、核心结论</h2>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>券提升提单率 +3.74pp（结论稳健）。</h3><p>实验组 50.78% vs 对照组 47.04%，第一周 +2.87pp。券的拉量作用在 8 月批次同样存在，但幅度小于 7 月。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>到期口径下实验组盈利率偏低、逾期率偏高（早期快照，需复核）。</h3><p>实验组盈利率 5.76% vs 对照 24.97%，逾期率 36.07% vs 25.19%。但仅 30% 订单到期、样本 122/135 件，结论不稳健，观察期成熟后可能收敛。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>警惕早期快照的「逾期暴露偏差」。</h3><p>逾期订单（status=8）在数据中即时可见，而正常订单（status=7）需等还款完成才计入「到期」。观察期越短，逾期订单占比越容易被高估，导致盈利率被低估。</p></div></div></section>
+
+<h2>附录：完整 PGSQL</h2><p class="desc">以下代码覆盖本报告的汇总、提单率、四周窗口交叉（到期订单 + 分期级口径）。</p>
+<details><summary>模块一：构建 8 月召回实验用户（4 批 T4 合并）</summary><pre>-- 数据源：no_apply_0730_0804_30pct / 0731_0805 / 0801_0806 / 0802_0807
+-- 召回日 = 表名最后一个日期（如 0730_0804 -&gt; 2026-08-04）
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-08-04' AS recall_date
+        FROM wangchuanliang.no_apply_0730_0804_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-05'
+        FROM wangchuanliang.no_apply_0731_0805_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-06'
+        FROM wangchuanliang.no_apply_0801_0806_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-07'
+        FROM wangchuanliang.no_apply_0802_0807_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT ab_group, COUNT(DISTINCT user_id) AS 用户数
+FROM t7
+GROUP BY ab_group
+ORDER BY ab_group;</pre></details>
+<details><summary>模块二：汇总统计（到期订单 + 分期级）</summary><pre>-- 口径：只统计已到期订单（due_date &lt; current_date）；分期级（repayment_plan_v2_copy 每期一行，仅计 status_period in (7,8)）
+-- 盈利率 = (Σrepaid_amt_period - Σremit_amt_period) / Σremit_amt_period
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-08-04' AS recall_date
+        FROM wangchuanliang.no_apply_0730_0804_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-05' FROM wangchuanliang.no_apply_0731_0805_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-06' FROM wangchuanliang.no_apply_0801_0806_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-07' FROM wangchuanliang.no_apply_0802_0807_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    t7.ab_group                                                             AS 分组,
+    COUNT(DISTINCT a.serial_id)                                             AS 到期件数,
+    COUNT(DISTINCT a.user_id)                                               AS 到期人数,
+    ROUND(ROUND(SUM(a.repaid_amt_period) - SUM(a.remit_amt_period), 2)
+          / NULLIF(ROUND(SUM(a.remit_amt_period), 2), 0) * 100, 2)          AS 盈利率,
+    ROUND((SUM(CASE WHEN a.loan_status_code_period = 8 THEN a.remit_amt_period ELSE 0 END) + 0.0)
+          / NULLIF(SUM(a.remit_amt_period), 0) * 100, 2)                    AS 逾期率_金额,
+    ROUND((COUNT(CASE WHEN a.loan_status_code_period = 8 THEN a.serial_id END) + 0.0)
+          / NULLIF(COUNT(a.serial_id), 0) * 100, 2)                         AS 逾期率_分期,
+    ROUND((COUNT(DISTINCT CASE WHEN a.loan_status_code_period = 8 THEN a.serial_id END) + 0.0)
+          / NULLIF(COUNT(DISTINCT a.serial_id), 0) * 100, 2)                AS 逾期率_订单
+FROM t7
+JOIN wangchuanliang.repayment_plan_v2_copy a
+  ON a.user_id = t7.user_id AND a.remit_date >= t7.recall_date
+WHERE a.is_remit = 1 AND a.due_date < current_date AND a.loan_status_code_period IN (7, 8)
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
+<details><summary>模块三：提单率（召回后累计）</summary><pre>WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-08-04' AS recall_date
+        FROM wangchuanliang.no_apply_0730_0804_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-05' FROM wangchuanliang.no_apply_0731_0805_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-06' FROM wangchuanliang.no_apply_0801_0806_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-07' FROM wangchuanliang.no_apply_0802_0807_30pct
+    ) x
+    GROUP BY user_id, ab_group
+)
+SELECT
+    t7.ab_group                                                             AS 分组,
+    COUNT(DISTINCT t7.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END)   AS 提单用户,
+    ROUND(COUNT(DISTINCT CASE WHEN o.serial_id IS NOT NULL THEN t7.user_id END) * 100.0
+          / NULLIF(COUNT(DISTINCT t7.user_id), 0), 2)                       AS 提单率
+FROM t7
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = t7.user_id AND o.apply_date >= t7.recall_date
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
+<details><summary>模块四：AB 组 × 四周窗口交叉（到期口径）</summary><pre>-- 第一周=召回日~+6；第二周=+7~+13；第三周=+14~+20；21天后=+21 起
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-08-04' AS recall_date
+        FROM wangchuanliang.no_apply_0730_0804_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-05' FROM wangchuanliang.no_apply_0731_0805_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-06' FROM wangchuanliang.no_apply_0801_0806_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE '2026-08-07' FROM wangchuanliang.no_apply_0802_0807_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+ords AS (
+    SELECT t7.ab_group,
+           CASE WHEN a.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6 THEN '第一周'
+                WHEN a.apply_date BETWEEN t7.recall_date + 7 AND t7.recall_date + 13 THEN '第二周'
+                WHEN a.apply_date BETWEEN t7.recall_date + 14 AND t7.recall_date + 20 THEN '第三周'
+                ELSE '21天后' END                                             AS win,
+           a.serial_id, a.user_id, a.loan_status_code_period, a.remit_amt_period, a.repaid_amt_period
+    FROM t7
+    JOIN wangchuanliang.repayment_plan_v2_copy a
+      ON a.user_id = t7.user_id AND a.remit_date >= t7.recall_date
+    WHERE a.is_remit = 1 AND a.due_date < current_date AND a.loan_status_code_period IN (7, 8)
+)
+SELECT
+    ab_group                                                                AS 分组,
+    win                                                                     AS 窗口,
+    COUNT(DISTINCT serial_id)                                               AS 到期件数,
+    ROUND(ROUND(SUM(repaid_amt_period) - SUM(remit_amt_period), 2)
+          / NULLIF(ROUND(SUM(remit_amt_period), 2), 0) * 100, 2)            AS 盈利率,
+    ROUND((SUM(CASE WHEN loan_status_code_period = 8 THEN remit_amt_period ELSE 0 END) + 0.0)
+          / NULLIF(SUM(remit_amt_period), 0) * 100, 2)                      AS 逾期率_金额,
+    ROUND((COUNT(DISTINCT CASE WHEN loan_status_code_period = 8 THEN serial_id END) + 0.0)
+          / NULLIF(COUNT(DISTINCT serial_id), 0) * 100, 2)                  AS 逾期率_订单
+FROM ords
+GROUP BY ab_group, win
+ORDER BY ab_group,
+         CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END;</pre></details>
+<details><summary>模块五：各窗口提单用户数与历史借款次数</summary><pre>-- 各窗口提单用户数（count distinct user）、历史借款次数（total_remit_rnb 均值）
+WITH feat AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, DATE '2026-08-04' AS recall_date, total_remit_rnb
+    FROM wangchuanliang.no_apply_0730_0804_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-08-05', total_remit_rnb FROM wangchuanliang.no_apply_0731_0805_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-08-06', total_remit_rnb FROM wangchuanliang.no_apply_0801_0806_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, DATE '2026-08-07', total_remit_rnb FROM wangchuanliang.no_apply_0802_0807_30pct
+),
+win_users AS (
+    SELECT ab_group,
+           CASE WHEN o.apply_date BETWEEN f.recall_date AND f.recall_date + 6 THEN 'W1'
+                WHEN o.apply_date BETWEEN f.recall_date + 7 AND f.recall_date + 13 THEN 'W2'
+                WHEN o.apply_date BETWEEN f.recall_date + 14 AND f.recall_date + 20 THEN 'W3'
+                ELSE 'W4' END                                                   AS win,
+           f.user_id, f.total_remit_rnb
+    FROM feat f
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = f.user_id AND o.apply_date >= f.recall_date
+)
+SELECT
+    ab_group                                                                    AS 分组,
+    win                                                                         AS 窗口,
+    COUNT(DISTINCT user_id)                                                     AS 提单用户,
+    ROUND(AVG(total_remit_rnb)::numeric, 2)                                     AS 历史借款次数
+FROM win_users
+GROUP BY ab_group, win
+ORDER BY ab_group, CASE win WHEN 'W1' THEN 1 WHEN 'W2' THEN 2 WHEN 'W3' THEN 3 ELSE 4 END;</pre></details>
+<details><summary>模块六：基线特征（历史借款次数 / 高息率）</summary><pre>-- 实验开始前的用户画像基线，用于验证 AB 分组平衡性
+SELECT
+    ab_group                                                                    AS 分组,
+    ROUND(AVG(total_remit_rnb)::numeric, 2)                                     AS 基线借款次数,
+    ROUND(AVG(high_interest_rate)::numeric, 3)                                  AS 基线高息率
+FROM (
+    SELECT churn_user_id::bigint AS user_id, ab_group, total_remit_rnb, high_interest_rate
+    FROM wangchuanliang.no_apply_0730_0804_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, total_remit_rnb, high_interest_rate FROM wangchuanliang.no_apply_0731_0805_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, total_remit_rnb, high_interest_rate FROM wangchuanliang.no_apply_0801_0806_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, total_remit_rnb, high_interest_rate FROM wangchuanliang.no_apply_0802_0807_30pct
+) x
+GROUP BY ab_group
+ORDER BY ab_group;</pre></details>
+<footer class="foot">口径说明：4 批 T4 用户合并（召回日 08-04 / 08-05 / 08-06 / 08-07）。只统计<b>已到期订单</b>（due_date &lt; current_date），<b>分期级</b>统计（repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period ∈ (7,8)）。盈利率 = (Σrepaid_amt_period − Σremit_amt_period) / Σremit_amt_period；逾期率_金额/分期/订单 三个口径。<br>⚠️ 观察期仅约 3 周，放款订单中仅约 30% 已到期，盈利率/逾期率为早期快照，样本小（到期 122/135 件），结论需更长观察期复核。</footer>
+</main><script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const W=['第一周','第二周','第三周'];
+const lineOpt=(min,max)=>({...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}}},scales:{...base.scales,y:{...base.scales.y,min,max,ticks:{callback:v=>v+'%'}}}});
+new Chart(document.getElementById('rateLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组提单率 %',data:[29.50,17.90,17.78],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组提单率 %',data:[32.37,16.25,16.37],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(0,40)});
+new Chart(document.getElementById('profitLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组盈利率 %',data:[21.54,42.44,21.37],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组盈利率 %',data:[4.76,15.21,-29.58],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(-40,50)});
+new Chart(document.getElementById('odLine'),{type:'line',data:{labels:W,datasets:[{label:'对照组逾期率_订单 %',data:[23.81,24.00,60.00],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组逾期率_订单 %',data:[33.68,43.48,50.00],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(0,70)});
+new Chart(document.getElementById('amtOd'),{type:'line',data:{labels:W,datasets:[{label:'对照组逾期率_金额 %',data:[16.06,8.77,26.98],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组逾期率_金额 %',data:[25.95,27.24,53.89],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:lineOpt(0,60)});
+</script></body></html>
