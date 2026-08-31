@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8月召回实验分析报告（第二批 · 前三天提单率）</title><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#071b2f;--p:#0c2944;--line:#2a5c7e;--text:#eff8ff;--muted:#aac5da;--cy:#43c7e7;--gr:#64dcae;--am:#ffc26b;--pk:#f68ab0}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06192b,#0b2c47 55%,#071a2d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1450px;margin:auto;padding:32px 38px 76px}.hero{text-align:center;padding:38px 15px 28px;border-bottom:1px solid var(--line)}.kicker{color:var(--cy);font-size:14px;letter-spacing:2px;font-weight:700}.hero h1{font-size:36px;line-height:1.25;margin:10px 0}.hero p,.desc,.sub{color:var(--muted);margin:0}.tag{display:inline-block;margin-top:15px;border:1px solid #33779e;border-radius:99px;padding:5px 12px;font-size:13px;color:#ccecff;background:#0c304e}h2{font-size:26px;margin:50px 0 8px;line-height:1.35}.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.card,.chart,.note{background:rgba(10,41,68,.95);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:0 10px 28px rgba(0,0,0,.13)}.label{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:850;line-height:1.2;margin:5px 0}.cyan{color:var(--cy)}.green{color:var(--gr)}.amber{color:var(--am)}.pink{color:var(--pk)}.chart h3{font-size:17px;margin:0 0 4px}.chart p{font-size:13px;color:var(--muted);margin:0 0 14px}.box{height:320px;position:relative}.callout{background:#0a2a45;border:1px solid #2a5c7e;border-left:4px solid #43c7e7;border-radius:12px;padding:14px 18px;margin:18px 0;line-height:1.7}.insight{display:flex;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:#0a2a45;margin:10px 0;align-items:flex-start}.idx{font-size:22px;font-weight:800;color:var(--cy);flex:none;width:38px;line-height:1.3}.insight h3{font-size:15.5px;margin:0 0 4px}.insight p{color:var(--muted);font-size:13.5px;margin:0}.table{overflow-x:auto;margin:14px 0}.table table{width:100%;border-collapse:collapse;font-size:14px;background:rgba(10,41,68,.95)}caption{caption-side:top;text-align:left;color:#e5f5ff;font-size:15px;font-weight:700;margin-bottom:8px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:center;white-space:nowrap}th{background:#0e3a5c;color:#d7edf9;font-weight:650}td.good{color:var(--gr);font-weight:750}td.bad{color:#ff8d8d;font-weight:750}tr.total td{background:#0e3453;font-weight:800}tr.w1 td{background:rgba(21,72,112,.5)}details{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:#092640}summary{cursor:pointer;padding:17px 20px;font-size:17px;font-weight:750;color:#e5f5ff}pre{margin:0;padding:0 20px 24px;overflow:auto;color:#d7edf9;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre}.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:50px;padding:20px;border-top:1px solid var(--line);line-height:1.8}@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="kicker">8 月流失用户召回实验专项分析 · 前三天提单率口径（第二批）</div><h1>8 月召回实验分析报告（第二批）<br>（3 天 30% 降息券 · 前三天提单率）</h1><p>统计期间：2026-08-26 ~ 08-30　·　报告生成时间：2026 年 8 月 31 日</p><span class="tag">3 批 T4 召回（0821_0826 / 0822_0827 / 0823_0828）· 实验组发 3 天 30% 降息券 · 对照组无营销</span></header>
+
+<h2>核心结论</h2><p class="desc">3 批 T4 用户合并（召回日 08-26 / 08-27 / 08-28），共 668 人（对照 333 / 实验 335）。「前三天」= 触达日 + 触达日+1 + 触达日+2（与券有效期 3 天一致）；「第一阶段」= 上笔结清日至触达日前一天（4 天空窗期），第一阶段活跃 = 空窗期内有活跃行为（active_days_cnt &gt; 0）。</p>
+<section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">召回实验用户</div><div class="num cyan">668</div><div class="sub">对照组 333 · 实验组 335（30%降息券）</div></article><article class="card"><div class="label">前三天提单率提升</div><div class="num amber">+1.11pp</div><div class="sub">实验组 15.52% vs 对照组 14.41%</div></article><article class="card"><div class="label">活跃用户提单率提升</div><div class="num pink">+2.96pp</div><div class="sub">实验组 22.73% vs 对照组 19.77%</div></article><article class="card"><div class="label">沉默用户券增量</div><div class="num amber">-0.78pp</div><div class="sub">实验组 7.55% vs 对照 8.33%（无效果）</div></article></section>
+<div class="callout"><strong>重要提示：</strong>本批（召回日 08-26~28）券的拉动效果<strong>大幅减弱</strong>——整体前三天提单率仅 +1.11pp，远低于上一批（召回日 08-18~21，+6.52pp）；且<strong>分批次方向不一致</strong>（前两个批次对照组反而更高，仅第三批次实验组明显领先）。样本量也更小（668 vs 885），结论需谨慎，建议合并更多批次复核。</div>
+
+<h2>一、总体概览：三批合并与前三天提单率</h2><div class="table"><table><caption>总体与分组的完整指标（3 批合并）</caption><thead><tr><th>分组</th><th>用户数</th><th>第一阶段活跃用户</th><th>活跃率</th><th>前三天提单用户</th><th>前三天提单率</th><th>活跃用户前三天提单率</th></tr></thead><tbody>
+<tr class="total"><td>总和</td><td>668</td><td>353</td><td>52.84%</td><td>100</td><td>14.97%</td><td>21.25%</td></tr>
+<tr><td>对照组（无营销）</td><td>333</td><td>177</td><td>53.15%</td><td>48</td><td>14.41%</td><td>19.77%</td></tr>
+<tr><td>实验组（30%降息券）</td><td>335</td><td>176</td><td>52.54%</td><td class="good">52</td><td class="good">15.52%</td><td class="good">22.73%</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>结论：</strong>①整体前三天提单率实验组 15.52% vs 对照组 14.41%，仅 +1.11pp，券拉动微弱。②活跃用户实验组 22.73% vs 对照 19.77%（+2.96pp），券对高意向人群仍有一定增量。③沉默用户实验组 7.55% vs 对照 8.33%（-0.78pp），券对沉默用户无拉动。④两组活跃率平衡（53.15% vs 52.54%）。</div>
+
+<h2>二、分批次前三天提单率</h2><div class="table"><table><caption>各批次（召回日 / 结清日 / 前三天）</caption><thead><tr><th>批次</th><th>召回日</th><th>结清日</th><th>分组</th><th>用户数</th><th>活跃用户</th><th>前三天提单用户</th><th>前三天提单率</th><th>活跃用户前三天提单率</th></tr></thead><tbody>
+<tr class="w1"><td rowspan="2">no_apply_0821_0826_30pct</td><td rowspan="2">08-26</td><td rowspan="2">08-21</td><td>对照组</td><td>135</td><td>67</td><td>22</td><td class="good">16.30%</td><td class="good">23.88%</td></tr>
+<tr class="w1"><td>实验组</td><td>136</td><td>62</td><td>18</td><td class="bad">13.24%</td><td class="bad">17.74%</td></tr>
+<tr class="w2"><td rowspan="2">no_apply_0822_0827_30pct</td><td rowspan="2">08-27</td><td rowspan="2">08-22</td><td>对照组</td><td>104</td><td>58</td><td>15</td><td>14.42%</td><td class="good">22.41%</td></tr>
+<tr class="w2"><td>实验组</td><td>105</td><td>56</td><td>15</td><td>14.29%</td><td>19.64%</td></tr>
+<tr class="w1"><td rowspan="2">no_apply_0823_0828_30pct</td><td rowspan="2">08-28</td><td rowspan="2">08-23</td><td>对照组</td><td>94</td><td>52</td><td>11</td><td>11.70%</td><td>11.54%</td></tr>
+<tr class="w1"><td>实验组</td><td>94</td><td>58</td><td>19</td><td class="good">20.21%</td><td class="good">31.03%</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>分批次前三天提单率</h3><p>前两批对照组 ≥ 实验组，仅第三批实验组领先。</p><div class="box"><canvas id="batchRate"></canvas></div></article><article class="chart"><h3>分批次活跃用户前三天提单率</h3><p>同样仅第三批实验组明显占优。</p><div class="box"><canvas id="batchActive"></canvas></div></article></section>
+<div class="callout"><strong>批次结论：</strong>方向不稳定——0821_0826 批次对照组反超（-3.06pp）、0822_0827 持平（-0.13pp）、仅 0823_0828 批次实验组明显领先（+8.51pp）。这与上一批「三批次方向一致」形成鲜明对比，提示本批券效果受样本/时间波动影响较大，<strong>不能据此否定券效果，但也不足以支撑券有效</strong>。</div>
+
+<h2>三、前三天逐日提单率</h2><div class="table"><table><caption>前三天逐日提单用户数与提单率（3 批合并）</caption><thead><tr><th>分组</th><th>第 1 天提单用户</th><th>第 1 天提单率</th><th>第 2 天提单用户</th><th>第 2 天提单率</th><th>第 3 天提单用户</th><th>第 3 天提单率</th></tr></thead><tbody>
+<tr><td>对照组（333）</td><td class="good">25</td><td class="good">7.51%</td><td>12</td><td>3.60%</td><td>11</td><td>3.30%</td></tr>
+<tr><td>实验组（335）</td><td>22</td><td>6.57%</td><td class="good">17</td><td class="good">5.07%</td><td class="good">13</td><td class="good">3.88%</td></tr>
+<tr class="total"><td>差异（实验 − 对照）</td><td>-3</td><td>-0.94pp</td><td>+5</td><td>+1.47pp</td><td>+2</td><td>+0.58pp</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>前三天逐日提单率</h3><p>第 1 天对照组反而更高，第 2、3 天实验组略高。</p><div class="box"><canvas id="dailyLine"></canvas></div></article><article class="chart"><h3>前三天逐日提单用户数</h3><p>实验组第 1 天反低于对照组。</p><div class="box"><canvas id="dailyBar"></canvas></div></article></section>
+<div class="callout"><strong>时间节奏结论：</strong>本批券的「第 1 天黄金窗口」效应消失——第 1 天实验组 6.57% 反而低于对照组 7.51%（-0.94pp），只在第 2、3 天小幅领先。与上一批「第 1 天 +2.92pp」的强拉动形成反差，说明本批券的即时刺激作用不强。</div>
+
+<h2>四、机制验证：第一阶段活跃 vs 沉默用户</h2><div class="table"><table><caption>活跃 / 沉默用户 × 前三天提单（3 批合并）</caption><thead><tr><th>分组</th><th>分段</th><th>用户数</th><th>前三天提单</th><th>提单率</th><th>券的增量</th></tr></thead><tbody>
+<tr><td rowspan="2">对照组</td><td>沉默</td><td>156</td><td>13</td><td>8.33%</td><td>—</td></tr>
+<tr><td>活跃</td><td>177</td><td>35</td><td>19.77%</td><td>—</td></tr>
+<tr><td rowspan="2">实验组</td><td>沉默</td><td>159</td><td>12</td><td>7.55%</td><td class="bad">-0.78pp</td></tr>
+<tr><td>活跃</td><td>176</td><td>40</td><td>22.73%</td><td class="good">+2.96pp</td></tr>
+</tbody></table></div>
+<section class="grid g2"><article class="chart"><h3>活跃 / 沉默 × 分组提单率</h3><p>券的增量只出现在活跃用户。</p><div class="box"><canvas id="segBar"></canvas></div></article><article class="chart"><h3>券对两类用户的增量</h3><p>活跃 +2.96pp，沉默 -0.78pp。</p><div class="box"><canvas id="liftBar"></canvas></div></article></section>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>券只对活跃用户有微弱增量，对沉默用户无效果。</h3><p>活跃用户实验组 22.73% vs 对照 19.77%（+2.96pp）；沉默用户实验组 7.55% vs 对照 8.33%（-0.78pp）。本批券的价值仍落在高意向人群，但幅度小于上一批（+7.47pp）。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>分批次方向不一致，警惕样本波动。</h3><p>三批次中两批对照组更高/持平，仅一批实验组领先。样本量（668）小于上一批（885），且批次间差异大，+1.11pp 的合并增量很可能被少数批次或噪声驱动。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>与上一批（+6.52pp）对比：券效果随时间/批次衰减。</h3><p>同样是无券 vs 3天券、同样的统计口径，上一批整体 +6.52pp、本批仅 +1.11pp。需要拉齐更多批次或检验是否与召回日、用户构成、市场环境相关，再判断是「衰减」还是「噪声」。</p></div></div></section>
+
+<h2>五、核心结论汇总</h2>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>本批券的整体拉动微弱（+1.11pp）。</h3><p>实验组 15.52% vs 对照组 14.41%，远低于上一批的 +6.52pp。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>分批次方向不稳定（前两批反/持平，仅第三批正）。</h3><p>0821_0826 -3.06pp、0822_0827 -0.13pp、0823_0828 +8.51pp，不足以得出稳定结论。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>券仅对活跃用户有增量（+2.96pp），对沉默用户无效（-0.78pp）。</h3><p>与上一批一致的方向：券的价值集中在高意向人群，但幅度明显变小。</p></div></div></section>
+
+<h2>六、策略建议</h2>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>本批数据不支持「扩大投放」，建议先做稳健性验证。</h3><p>券增量仅 +1.11pp 且分批次方向不稳定，应合并更多批次、或检验召回日/用户构成的影响后再决定投放策略。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>券仍只对「第一阶段活跃用户」有效，继续聚焦高意向人群。</h3><p>活跃用户 +2.96pp、沉默用户 -0.78pp，延续上一批的结论：券不要投给沉默用户。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>第 1 天无拉动，可重排触达节奏或验证券配置。</h3><p>上一批第 1 天 +2.92pp，本批第 1 天 -0.94pp，建议排查本批券是否准时下发、触达是否到位。</p></div></div></section>
+
+<h2>附录：完整 PGSQL</h2><details><summary>模块一：构建 3 批召回用户 + 前三天提单率</summary><pre>WITH u AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, active_days_cnt, '2026-08-26'::date AS recall_date
+    FROM wangchuanliang.no_apply_0821_0826_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, '2026-08-27'::date
+    FROM wangchuanliang.no_apply_0822_0827_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, '2026-08-28'::date
+    FROM wangchuanliang.no_apply_0823_0828_30pct
+),
+applied AS (
+    SELECT DISTINCT o.user_id, o.apply_date FROM wangchuanliang.order_loan_f_v2_copy o
+)
+SELECT
+    u.ab_group,
+    COUNT(DISTINCT u.user_id)                                              AS 用户数,
+    COUNT(DISTINCT CASE WHEN u.active_days_cnt > 0 THEN u.user_id END)     AS 第一阶段活跃用户,
+    COUNT(DISTINCT CASE WHEN a.user_id IS NOT NULL AND a.apply_date BETWEEN u.recall_date AND u.recall_date + 2
+                         THEN u.user_id END)                               AS 前三天提单用户,
+    COUNT(DISTINCT CASE WHEN u.active_days_cnt > 0 AND a.user_id IS NOT NULL
+                          AND a.apply_date BETWEEN u.recall_date AND u.recall_date + 2
+                         THEN u.user_id END)                               AS 活跃且前三天提单
+FROM u
+LEFT JOIN applied a ON a.user_id = u.user_id
+GROUP BY u.ab_group
+ORDER BY u.ab_group;</pre></details>
+<details><summary>模块二：前三天逐日提单</summary><pre>WITH u AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, '2026-08-26'::date AS recall_date
+    FROM wangchuanliang.no_apply_0821_0826_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, '2026-08-27'::date FROM wangchuanliang.no_apply_0822_0827_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, '2026-08-28'::date FROM wangchuanliang.no_apply_0823_0828_30pct
+)
+SELECT
+    u.ab_group,
+    COUNT(DISTINCT CASE WHEN o.apply_date = u.recall_date THEN u.user_id END)       AS 第1天提单,
+    COUNT(DISTINCT CASE WHEN o.apply_date = u.recall_date + 1 THEN u.user_id END)   AS 第2天提单,
+    COUNT(DISTINCT CASE WHEN o.apply_date = u.recall_date + 2 THEN u.user_id END)   AS 第3天提单
+FROM u
+LEFT JOIN wangchuanliang.order_loan_f_v2_copy o
+       ON o.user_id = u.user_id AND o.apply_date BETWEEN u.recall_date AND u.recall_date + 2
+GROUP BY u.ab_group
+ORDER BY u.ab_group;</pre></details>
+<details><summary>模块三：第一阶段活跃 / 沉默 × 前三天提单</summary><pre>WITH u AS (
+    SELECT churn_user_id::bigint AS user_id, ab_group, active_days_cnt, '2026-08-26'::date AS recall_date
+    FROM wangchuanliang.no_apply_0821_0826_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, '2026-08-27'::date FROM wangchuanliang.no_apply_0822_0827_30pct
+    UNION ALL
+    SELECT churn_user_id::bigint, ab_group, active_days_cnt, '2026-08-28'::date FROM wangchuanliang.no_apply_0823_0828_30pct
+),
+applied AS (
+    SELECT DISTINCT o.user_id FROM wangchuanliang.order_loan_f_v2_copy o
+)
+SELECT
+    u.ab_group,
+    CASE WHEN u.active_days_cnt > 0 THEN '活跃' ELSE '沉默' END            AS 分段,
+    COUNT(*)                                                               AS 用户数,
+    SUM(CASE WHEN a.user_id IS NOT NULL AND EXISTS (
+                SELECT 1 FROM wangchuanliang.order_loan_f_v2_copy o2
+                WHERE o2.user_id = u.user_id
+                  AND o2.apply_date BETWEEN u.recall_date AND u.recall_date + 2
+             ) THEN 1 ELSE 0 END)                                          AS 前三天提单
+FROM u
+LEFT JOIN applied a ON a.user_id = u.user_id
+GROUP BY u.ab_group, CASE WHEN u.active_days_cnt > 0 THEN '活跃' ELSE '沉默' END
+ORDER BY u.ab_group, 分段;</pre></details>
+<footer class="foot">口径说明：3 批 T4 用户合并（召回日 08-26 / 08-27 / 08-28）。<b>前三天</b> = 触达日 + 触达日+1 + 触达日+2（与 3 天券有效期一致）；<b>第一阶段</b> = 上笔结清日至触达日前一天（4 天空窗期，如 0821_0826 批次为 08-22~08-25）；<b>第一阶段活跃</b> = 空窗期内有活跃行为（active_days_cnt &gt; 0）。提单以 order_loan_f_v2_copy.apply_date 判定。<br>⚠️ 本批券效果较上一批明显减弱（+1.11pp vs +6.52pp），且分批次方向不一致，样本量偏小（668），结论需谨慎。</footer>
+</main><script>
+Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,padding:15}}},scales:{x:{grid:{color:'rgba(80,142,176,.16)'}},y:{grid:{color:'rgba(80,142,176,.16)'},beginAtZero:true}}};
+const pctOpt=(max)=>({...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},scales:{...base.scales,y:{...base.scales.y,max,ticks:{callback:v=>v+'%'}}}});
+const B=['0821_0826\n(触达08-26)','0822_0827\n(触达08-27)','0823_0828\n(触达08-28)'];
+new Chart(document.getElementById('batchRate'),{type:'bar',data:{labels:B,datasets:[{label:'对照组 %',data:[16.30,14.42,11.70],backgroundColor:'#5b7b95'},{label:'实验组 %',data:[13.24,14.29,20.21],backgroundColor:'#43c7e7'}]},options:pctOpt(25)});
+new Chart(document.getElementById('batchActive'),{type:'bar',data:{labels:B,datasets:[{label:'对照组 %',data:[23.88,22.41,11.54],backgroundColor:'#5b7b95'},{label:'实验组 %',data:[17.74,19.64,31.03],backgroundColor:'#43c7e7'}]},options:pctOpt(35)});
+new Chart(document.getElementById('dailyLine'),{type:'line',data:{labels:['第1天','第2天','第3天'],datasets:[{label:'对照组提单率 %',data:[7.51,3.60,3.30],borderColor:'#94a3b8',backgroundColor:'#94a3b8',tension:.25,pointRadius:4},{label:'实验组提单率 %',data:[6.57,5.07,3.88],borderColor:'#43c7e7',backgroundColor:'#43c7e7',tension:.25,pointRadius:4}]},options:pctOpt(10)});
+new Chart(document.getElementById('dailyBar'),{type:'bar',data:{labels:['第1天','第2天','第3天'],datasets:[{label:'对照组',data:[25,12,11],backgroundColor:'#5b7b95'},{label:'实验组',data:[22,17,13],backgroundColor:'#43c7e7'}]},options:{...base,plugins:{...base.plugins,tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+' 人'}}}}});
+new Chart(document.getElementById('segBar'),{type:'bar',data:{labels:['沉默用户','活跃用户'],datasets:[{label:'对照组 %',data:[8.33,19.77],backgroundColor:'#5b7b95'},{label:'实验组 %',data:[7.55,22.73],backgroundColor:'#43c7e7'}]},options:pctOpt(25)});
+new Chart(document.getElementById('liftBar'),{type:'bar',data:{labels:['沉默用户','活跃用户'],datasets:[{label:'券的增量 pp',data:[-0.78,2.96],backgroundColor:'#64dcae'}]},options:{...pctOpt(5),scales:{...pctOpt(5).scales,y:{...pctOpt(5).scales.y,min:-2,max:5}}}});
+</script></body></html>
