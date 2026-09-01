@@ -5,7 +5,7 @@
 </style></head><body><main class="wrap">
 <header class="hero"><div class="kicker">8 月流失用户召回实验专项分析 · 到期订单口径</div><h1>8 月召回实验分析报告<br>（7 天券 vs 3 天券 · 到期订单口径）</h1><p>统计期间：2026-08-04 ~ 08-31　·　报告生成时间：2026 年 8 月 31 日</p><span class="tag">4 批 T4 召回（0730_0804 / 0731_0805 / 0801_0806 / 0802_0807）· 实验组 7 天 30% 券 vs 对照组 3 天 30% 券</span></header>
 
-<h2>核心结论</h2><p class="desc">4 批 T4 用户合并（召回日 08-04~07），共 1,658 人（对照 827 / 实验 831）。两组均为 30% 降息券，唯一区别是有效期（7 天 vs 3 天）。盈利率 = (Σrepaid−Σremit)/Σremit（is_remit=1 且 is_due=1，分期级）。</p>
+<h2>核心结论</h2><p class="desc">4 批 T4 用户合并（召回日 08-04~07），共 1,658 人（对照 827 / 实验 831）。两组均为 30% 降息券，唯一区别是有效期（7 天 vs 3 天）。盈利率 = (Σrepaid−Σremit)/Σremit（is_remit=1 且 is_due=1，分期级）。<b>核心机制：券期限的「自选择效应」——7 天券长有效期吸引犹豫型低质量用户，3 天券短有效期筛选出迫切型高质量用户。</b></p>
 <section class="grid g4" style="margin-top:18px"><article class="card"><div class="label">召回实验用户</div><div class="num cyan">1,658</div><div class="sub">对照组 827（3天券）· 实验组 831（7天券）</div></article><article class="card"><div class="label">累计提单率提升</div><div class="num green">+2.64pp</div><div class="sub">实验组 53.31% vs 对照组 50.67%</div></article><article class="card"><div class="label">到期口径盈利率</div><div class="num pink">5.53% vs 25.32%</div><div class="sub">实验组远低于对照组（-19.79pp）</div></article><article class="card"><div class="label">首笔订单盈利率</div><div class="num pink">-1.72% vs 25.55%</div><div class="sub">7天券首笔订单亏损，3天券正常盈利</div></article></section>
 
 <h2>一、总体概览：总和与 AB 组对比（到期订单口径）</h2>
@@ -14,7 +14,7 @@
 <tr><td>对照组（3天券）</td><td>221</td><td>188</td><td>50.67%</td><td class="good">25.32%</td><td class="good">15.16%</td><td class="good">19.70%</td><td class="good">24.89%</td></tr>
 <tr><td>实验组（7天券）</td><td>207</td><td>178</td><td class="good">53.31%</td><td class="bad">5.53%</td><td class="bad">27.19%</td><td class="bad">29.30%</td><td class="bad">30.92%</td></tr>
 </tbody></table></div>
-<div class="callout red"><strong>结论：</strong>① 7 天券提升提单率 +2.64pp（53.31% vs 50.67%），实现「量增」。② 但到期口径下，实验组盈利率 5.53% 远低于对照组 25.32%（<strong>-19.79pp</strong>），且三个逾期率全面更高（订单 30.92% vs 24.89%）。③ 与「7天券 vs 无券」（A组）不同，这里两组都降息 30%，差异纯粹来自「7 天券多覆盖 D4~D7」——这 4 天拉来的慢决策用户质量极差，拖累了整体盈利。</div>
+<div class="callout red"><strong>结论：</strong>① 7 天券提升提单率 +2.64pp（53.31% vs 50.67%），实现「量增」。② 但到期口径下，实验组盈利率 5.53% 远低于对照组 25.32%（<strong>-19.79pp</strong>），且三个逾期率全面更高（订单 30.92% vs 24.89%）。③ 与「7天券 vs 无券」（A组）不同，这里两组都降息 30%、让利相同，差异来自「券期限的自选择效应」——7 天券长有效期吸引犹豫型低质量用户，拖累了整体盈利。</div>
 
 <h2>二、AB 组 × 四周窗口交叉（到期订单口径）</h2>
 <div class="table"><table><caption>按窗口优先的交叉指标（盈利率 + 逾期率）</caption><thead><tr><th>窗口</th><th>分组</th><th>到期件数</th><th>盈利率</th><th>逾期率_金额</th><th>逾期率_订单</th></tr></thead><tbody>
@@ -26,7 +26,7 @@
 <tr class="w1"><td>实验组(7天券)</td><td>20</td><td>33.05%</td><td>15.46%</td><td>25.00%</td></tr>
 </tbody></table></div>
 <section class="grid g2"><article class="chart"><h3>四周提单率趋势</h3><p>差异集中第一周，第二周起收窄。</p><div class="box"><canvas id="rateLine"></canvas></div></article><article class="chart"><h3>四周盈利率趋势（到期口径）</h3><p>第一周实验组大幅低于对照组。</p><div class="box"><canvas id="profitLine"></canvas></div></article><article class="chart"><h3>四周逾期率_订单趋势</h3><p>实验组各窗口逾期率均更高。</p><div class="box"><canvas id="odLine"></canvas></div></article><article class="chart"><h3>四周逾期率_金额趋势</h3><p>第一周实验组逾期率即高于对照组。</p><div class="box"><canvas id="amtOd"></canvas></div></article></section>
-<div class="callout"><strong>窗口结论：</strong>① 提单：7 天券增量全在第一周（+2.87pp，因 7 天券第一周覆盖 7 天、3 天券只覆盖 3 天）。② 盈利：第一周实验组盈利率仅 2.35%（对照组 25.97%），差距 -23.62pp——<strong>7 天券第一周多覆盖的 D4~D7 用户，盈利率极低、逾期率极高（30.38%），是拖累整体盈利的核心</strong>。</div>
+<div class="callout"><strong>窗口结论：</strong>① 提单：7 天券增量全在第一周（+2.87pp，因 7 天券第一周覆盖 7 天、3 天券只覆盖 3 天）。② 盈利：第一周实验组盈利率仅 2.35%（对照组 25.97%），差距 -23.62pp——<strong>7 天券第一周拉来的用户盈利率极低、逾期率极高（30.38%），是拖累整体盈利的核心</strong>。</div>
 
 <h2>三、前3天 vs 后4天提单订单的盈利对比</h2><p class="desc">把第一周（券期）拆成「前3天（D1~D3，两组都有券）」和「后4天（D4~D7，仅7天券有效）」，按订单 apply_date 归窗口，对比两组到期订单的盈利质量。</p>
 <div class="table"><table><caption>前3天 vs 后4天提单订单盈利数据（到期订单口径）</caption><thead><tr><th>分组</th><th>时间段</th><th>到期订单数</th><th>放款总额</th><th>总利润额</th><th>盈利率</th><th>逾期率_金额</th><th>逾期率_订单</th></tr></thead><tbody>
@@ -35,39 +35,39 @@
 <tr class="w2"><td>对照组(3天券)</td><td>后4天(D4~D7)</td><td>56</td><td>118,108</td><td>44,017</td><td class="good">37.27%</td><td class="good">9.81%</td><td>28.57%</td></tr>
 <tr class="w2"><td>实验组(7天券)</td><td>后4天(D4~D7)</td><td>73</td><td>129,014</td><td class="good">20,917</td><td>16.21%</td><td>18.39%</td><td>27.40%</td></tr>
 </tbody></table></div>
-<div class="callout red"><strong>关键发现：</strong>① 前3天两组都有 30% 券、让利相同，但实验组前3天提单订单亏损 -6.71%（对照组盈利 19.35%），逾期率高达 34.35%（对照 15.97%）——7天券组在前3天就拉来了大量劣质用户。② 后4天对照组（3天券已过期、自然提单）盈利质量反而更高（37.27% vs 16.21%）。<strong>7天券的「劣质用户」问题在前3天和后4天同时存在，并非只集中在 D4~D7 的慢决策用户。</strong></div>
+<div class="callout red"><strong>关键发现：</strong>① 前3天两组都有 30% 券、让利相同，但实验组前3天提单订单亏损 -6.71%（对照组盈利 19.35%），逾期率高达 34.35%（对照 15.97%）——7天券组在前3天就拉来了大量劣质用户。② 后4天对照组（3天券已过期、自然提单）盈利质量反而更高（37.27% vs 16.21%）。<strong>7天券的「低质量用户」问题在前3天和后4天同时存在——这印证了「券期限自选择效应」：长券吸引犹豫型低质量用户，而非单纯「多覆盖 D4~D7」。</strong></div>
 
-<h2>四、首周 vs 非首周用户：优质前移、劣质后置、让利吃首笔</h2><p class="desc">用户维度：锁定「首周（召回日~+6）内有提单」的用户，把这些用户的所有已到期订单（含后续多次提单放款）全部计入；再刨除这些用户，观察「非首周」用户的盈利质量。</p>
+<h2>四、首周 vs 非首周用户：首笔劣质、复借不差</h2><p class="desc">用户维度：锁定「首周（召回日~+6）内有提单」的用户，把这些用户的所有已到期订单（含后续多次提单放款）全部计入；再刨除这些用户，观察「非首周」用户的盈利质量。</p>
 <div class="table"><table><caption>① 首周提单用户的总利润额对比（到期订单口径）</caption><thead><tr><th>分组</th><th>首周提单用户</th><th>到期订单数</th><th>放款总额</th><th>总利润额</th><th>盈利率</th><th>逾期率_金额</th></tr></thead><tbody>
 <tr><td>对照组（3天券）</td><td>159</td><td>189</td><td>366,809</td><td>94,095</td><td class="good">25.65%</td><td class="good">14.76%</td></tr>
 <tr><td>实验组（7天券）</td><td>150</td><td>176</td><td>355,484</td><td class="bad">9,761</td><td class="bad">2.75%</td><td class="bad">28.46%</td></tr>
 </tbody></table></div>
-<div class="callout"><strong>首周提单用户：实验组盈利率 2.75% 远低于对照组 25.65%（-22.90pp）。</strong>7 天券首周拉来的用户（含 D4~D7 慢决策），逾期率 28.46%、总利润仅 9,761 元，几乎不赚钱。</div>
+<div class="callout red"><strong>首周提单用户：实验组盈利率 2.75% 远低于对照组 25.65%（-22.90pp）。</strong>7 天券首周拉来的用户逾期率 28.46%（对照 14.76%）、总利润仅 9,761 元（对照 94,095 元）——首周被 7 天券吸引来的用户质量显著更差，而非「优质用户前移」。</div>
 <div class="table"><table><caption>② 第一笔 vs 后续笔订单的盈利拆解（到期订单口径）</caption><thead><tr><th>订单类型</th><th>分组</th><th>订单数</th><th>用户数</th><th>放款总额</th><th>总利润额</th><th>盈利率</th><th>逾期率_金额</th></tr></thead><tbody>
 <tr class="w1"><td rowspan="2">第一笔订单</td><td>对照组</td><td>159</td><td>159</td><td>316,622</td><td class="good">80,883</td><td class="good">25.55%</td><td class="good">13.82%</td></tr>
 <tr class="w1"><td>实验组</td><td>148</td><td>148</td><td>301,012</td><td class="bad">-5,174</td><td class="bad">-1.72%</td><td class="bad">30.39%</td></tr>
 <tr class="w2"><td rowspan="2">后续笔订单</td><td>对照组</td><td>30</td><td>20</td><td>50,187</td><td>13,212</td><td>26.33%</td><td>20.66%</td></tr>
 <tr class="w2"><td>实验组</td><td>28</td><td>19</td><td>54,472</td><td class="good">14,935</td><td class="good">27.42%</td><td class="good">17.76%</td></tr>
 </tbody></table></div>
-<div class="callout red"><strong>7 天券首笔订单直接亏损（-1.72%）。</strong>实验组首笔订单逾期率 30.39%、总利润 -5,174 元（亏损），而对照组首笔 25.55%（盈利 80,883 元）。这是 7 天券多覆盖 D4~D7 拉来的「劣质慢决策用户」直接造成的。但复借（后续笔）两组盈利质量接近（27.42% vs 26.33%），且实验组复借反而略优。</div>
+<div class="callout red"><strong>7 天券首笔订单直接亏损（-1.72%）。</strong>实验组首笔订单逾期率 30.39%、总利润 -5,174 元（亏损），而对照组首笔 25.55%（盈利 80,883 元）。两组同为 30% 降息、让利相同，差异来自「券期限信号」吸引的用户不同——7 天券长有效期拉来了犹豫型低质量首笔用户。但复借（后续笔）两组盈利质量接近（27.42% vs 26.33%），实验组复借反而略优。</div>
 <div class="table"><table><caption>③ 刨除首周提单用户后的盈利数据（到期订单口径）</caption><thead><tr><th>分组</th><th>到期件数</th><th>到期人数</th><th>放款总额</th><th>总利润额</th><th>盈利率</th><th>逾期率_金额</th><th>逾期率_订单</th></tr></thead><tbody>
 <tr><td>对照组</td><td>32</td><td>29</td><td>40,027</td><td>8,904</td><td>22.24%</td><td>18.86%</td><td>25.00%</td></tr>
 <tr><td>实验组</td><td>31</td><td>28</td><td>51,052</td><td class="good">12,727</td><td class="good">24.93%</td><td>18.39%</td><td class="bad">35.48%</td></tr>
 </tbody></table></div>
-<div class="callout amber"><strong>刨除首周后，两组盈利质量接近，实验组盈利率反而略高（24.93% vs 22.24%）。</strong>说明「非首周用户」两组的盈利质量没有本质差异——7 天券的亏损，几乎全部集中在「首周券期内拉来的 D4~D7 首笔用户」身上，而不是整体用户质量变差。</div>
+<div class="callout amber"><strong>刨除首周后，两组盈利质量接近，实验组盈利率反而略高（24.93% vs 22.24%）。</strong>说明 7 天券的「低质量」问题只集中在「首周被券吸引来的用户」，并非整体用户质量变差——一旦脱离券的直接刺激，两组的用户质量没有本质差异。</div>
 
-<h2>五、机制验证：D4~D7 承接拉来劣质首笔用户</h2>
+<h2>五、机制验证：券期限的自选择效应</h2>
 <div class="table"><table><caption>基线特征（随机分组有效性）</caption><thead><tr><th>分组</th><th>人数</th><th>基线借款次数</th><th>基线高息率</th><th>基线逾期次数</th></tr></thead><tbody>
 <tr><td>对照组(3天券)</td><td>827</td><td>2.58</td><td>0.295</td><td>0.32</td></tr>
 <tr><td>实验组(7天券)</td><td>831</td><td>2.67</td><td>0.274</td><td>0.30</td></tr>
 </tbody></table></div>
-<section class="note"><div class="insight"><div class="idx">01</div><div><h3>两组基线平衡，随机分组有效。</h3><p>借款次数 2.58 vs 2.67、高息率 0.295 vs 0.274、逾期 0.32 vs 0.30——两组起点一致，后续盈利差异不是初始不平衡造成。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>7 天券的额外 4 天（D4~D7）拉来的是「劣质慢决策用户」。</h3><p>7 天券与 3 天券前 3 天完全等价，唯一差异是 D4~D7 仍有效。这 4 天拉来的用户（拖到第 4~7 天才下单的犹豫者），首笔逾期率高达 30.39%、首笔盈利率 -1.72%（亏损）——直接拖垮了 7 天券的整体盈利。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>但「劣质」只集中在首笔，复借和非首周用户不差。</h3><p>后续笔订单实验组盈利率 27.42%（对照 26.33%）、刨除首周后实验组 24.93%（对照 22.24%）——7 天券的亏损是「一次性首笔成本」，并非整体用户质量变差。</p></div></div></section>
+<section class="note"><div class="insight"><div class="idx">01</div><div><h3>两组基线平衡，随机分组有效。</h3><p>借款次数 2.58 vs 2.67、高息率 0.295 vs 0.274、逾期 0.32 vs 0.30——两组起点一致，后续盈利差异不是初始不平衡造成。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>券期限的「自选择效应」：长券吸引犹豫型低质量用户，短券筛选迫切型高质量用户。</h3><p>7 天券与 3 天券同为 30% 降息、让利相同，唯一差异是有效期。7 天券的「时间宽裕」信号吸引了「可借可不借、犹豫不决」的低质量用户（需求不迫切、还款意愿弱）；3 天券的「临期」信号筛选出「需求迫切、明确要借」的高质量用户。证据：前 3 天两组都有券、让利相同，但 7 天券组前 3 天订单逾期率 34.35%、盈利率 -6.71%，远差于 3 天券组（15.97%、19.35%）。</p></div></div><div class="insight"><div class="idx">03</div><div><h3>但「低质量」只集中在首笔/首周被券吸引的用户，复借和非首周不差。</h3><p>后续笔订单实验组盈利率 27.42%（对照 26.33%）、刨除首周后实验组 24.93%（对照 22.24%）——一旦脱离券的直接刺激，两组用户质量没有本质差异，7 天券的亏损是「首笔自选择」的一次性成本。</p></div></div></section>
 
 <h2>六、核心结论汇总</h2>
-<section class="note"><div class="insight"><div class="idx">A</div><div><h3>7 天券「量增」：累计提单率 +2.64pp。</h3><p>实验组 53.31% vs 对照组 50.67%，增量全部来自第一周（+2.87pp，7 天券多覆盖 D4~D7）。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>7 天券「利减」：盈利率 -19.79pp。</h3><p>实验组 5.53% vs 对照组 25.32%，逾期率更高（30.92% vs 24.89%）。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>核心机制：D4~D7 拉来的首笔订单亏损（-1.72%）。</h3><p>7 天券相对 3 天券的唯一差异是 D4~D7 仍有效，而这 4 天拉来的慢决策用户首笔逾期率 30.39%、盈利率 -1.72%，是盈利恶化的唯一根源。</p></div></div><div class="insight"><div class="idx">D</div><div><h3>亏损是一次性的，复借和非首周用户质量不差。</h3><p>后续笔（27.42% vs 26.33%）、刨除首周（24.93% vs 22.24%）两组盈利质量接近甚至实验组略优——7 天券的代价集中在「首笔劣质用户」，而非整体。</p></div></div></section>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>7 天券「量增」：累计提单率 +2.64pp。</h3><p>实验组 53.31% vs 对照组 50.67%，增量全部来自第一周（+2.87pp，7 天券多覆盖 D4~D7）。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>7 天券「利减」：盈利率 -19.79pp。</h3><p>实验组 5.53% vs 对照组 25.32%，逾期率更高（30.92% vs 24.89%）。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>核心机制：券期限的「自选择效应」。</h3><p>两组同为 30% 降息、让利相同，唯一差异是有效期。7 天券长有效期吸引「犹豫型低质量用户」（首笔逾期率 30.39%、盈利率 -1.72% 亏损），3 天券短有效期筛选「迫切型高质量用户」（首笔 25.55%、逾期率 13.82%）——效应在前 3 天（两组都有券）就已体现。</p></div></div><div class="insight"><div class="idx">D</div><div><h3>低质量是一次性的，复借和非首周用户质量不差。</h3><p>后续笔（27.42% vs 26.33%）、刨除首周（24.93% vs 22.24%）两组盈利质量接近甚至实验组略优——7 天券的代价集中在「首笔/首周被券吸引的低质量用户」，而非整体。</p></div></div></section>
 
 <h2>七、策略建议</h2>
-<section class="note"><div class="insight"><div class="idx">A</div><div><h3>7 天券的核心风险在「D4~D7 首笔劣质用户」，需针对性风控。</h3><p>7 天券多覆盖的 D4~D7 用户首笔逾期率 30.39%、盈利率 -1.72%，建议对这些「第 4~7 天才首次提单」的用户加审、压降额度或减少补贴。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>若看重盈利，3 天券优于 7 天券。</h3><p>7 天券仅比 3 天券多 +2.64pp 提单，却换来 -19.79pp 盈利率；除非「规模增量」能覆盖「首笔劣质用户」的坏账成本，否则不建议扩量 7 天券。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>复借用户是 7 天券的「正收益来源」，可重点经营。</h3><p>后续笔订单实验组盈利率 27.42%、逾期率 17.76%，优于首笔；建议对已转化用户重点经营复借，摊薄首笔劣质成本。</p></div></div></section>
+<section class="note"><div class="insight"><div class="idx">A</div><div><h3>7 天券的核心风险在「长有效期吸引的低质量首笔用户」，需针对性风控。</h3><p>7 天券首笔订单逾期率 30.39%、盈利率 -1.72%（亏损），且前 3 天（两组都有券）就已暴露（逾期率 34.35% vs 15.97%）；建议对 7 天券组的首笔用户加审、压降额度或减少补贴。</p></div></div><div class="insight"><div class="idx">B</div><div><h3>若看重盈利，3 天券优于 7 天券。</h3><p>7 天券仅比 3 天券多 +2.64pp 提单，却换来 -19.79pp 盈利率；除非「规模增量」能覆盖「首笔劣质用户」的坏账成本，否则不建议扩量 7 天券。</p></div></div><div class="insight"><div class="idx">C</div><div><h3>复借用户是 7 天券的「正收益来源」，可重点经营。</h3><p>后续笔订单实验组盈利率 27.42%、逾期率 17.76%，优于首笔；建议对已转化用户重点经营复借，摊薄首笔劣质成本。</p></div></div></section>
 
 <h2>附录：完整 PGSQL</h2>
 <details><summary>模块一：构建 4 批召回用户 + 汇总（到期订单口径）</summary><pre>WITH t7 AS (
