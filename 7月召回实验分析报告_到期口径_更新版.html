@@ -146,6 +146,93 @@ SELECT ab_group, win,
        ROUND((COUNT(DISTINCT CASE WHEN loan_status_code_period=8 THEN serial_id END)+0.0)/NULLIF(COUNT(DISTINCT serial_id),0)*100,2) AS 逾期率_订单
 FROM ords GROUP BY ab_group, win
 ORDER BY ab_group, CASE win WHEN '第一周' THEN 1 WHEN '第二周' THEN 2 WHEN '第三周' THEN 3 ELSE 4 END;</pre></details>
+<details><summary>模块五：机制验证——各窗口回归用户的历史特征</summary><pre>-- ============================================================
+-- 模块五：机制验证——各窗口回归用户的历史特征
+-- 历史特征（借款次数/高息率/逾期）不受观察期影响
+-- ============================================================
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date,
+           MAX(total_remit_rnb) AS total_remit_rnb,
+           MAX(high_interest_rate) AS high_interest_rate,
+           MAX(overdue_cnt) AS overdue_cnt
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-21&#x27; AS recall_date,
+               total_remit_rnb, high_interest_rate, overdue_cnt
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-22&#x27;, total_remit_rnb, high_interest_rate, overdue_cnt
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-23&#x27;, total_remit_rnb, high_interest_rate, overdue_cnt
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-24&#x27;, total_remit_rnb, high_interest_rate, overdue_cnt
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+fa AS (
+    SELECT t7.user_id, t7.ab_group, t7.recall_date,
+           t7.total_remit_rnb, t7.high_interest_rate, t7.overdue_cnt,
+           MIN(o.apply_date) AS fa
+    FROM t7
+    JOIN wangchuanliang.order_loan_f_v2_copy o
+      ON o.user_id = t7.user_id AND o.apply_date &gt;= t7.recall_date
+    GROUP BY t7.user_id, t7.ab_group, t7.recall_date, t7.total_remit_rnb, t7.high_interest_rate, t7.overdue_cnt
+)
+SELECT t7.ab_group AS 分组,
+       CASE WHEN f.fa BETWEEN t7.recall_date AND t7.recall_date + 6 THEN &#x27;第一周&#x27;
+            WHEN f.fa BETWEEN t7.recall_date + 7 AND t7.recall_date + 13 THEN &#x27;第二周&#x27;
+            WHEN f.fa BETWEEN t7.recall_date + 14 AND t7.recall_date + 20 THEN &#x27;第三周&#x27;
+            WHEN f.fa &gt;= t7.recall_date + 21 THEN &#x27;21天后&#x27; END AS win,
+       ROUND(AVG(f.total_remit_rnb)::numeric, 2) AS 历史借款次数,
+       ROUND(AVG(f.high_interest_rate)::numeric, 3) AS 历史高息率,
+       ROUND(AVG(f.overdue_cnt)::numeric, 2) AS 历史逾期
+FROM t7
+JOIN fa f ON f.user_id = t7.user_id AND f.ab_group = t7.ab_group AND f.recall_date = t7.recall_date
+WHERE f.fa IS NOT NULL
+GROUP BY t7.ab_group, win
+ORDER BY t7.ab_group, CASE win WHEN &#x27;第一周&#x27; THEN 1 WHEN &#x27;第二周&#x27; THEN 2 WHEN &#x27;第三周&#x27; THEN 3 ELSE 4 END;</pre></details>
+<details><summary>模块六：首周提单用户的总利润额（用户维度）</summary><pre>-- ============================================================
+-- 模块六：首周提单用户的总利润额（用户维度）
+-- 首周提单用户 = 召回后 6 天内有提单的用户；这些用户所有到期订单计入
+-- ============================================================
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-21&#x27; AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-22&#x27;
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-23&#x27;
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-24&#x27;
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+w1_users AS (
+    SELECT DISTINCT t7.user_id, t7.ab_group
+    FROM t7
+    JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = t7.user_id
+    WHERE o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+)
+SELECT t7.ab_group AS 分组,
+       COUNT(DISTINCT w.user_id) AS 首周提单用户数,
+       COUNT(DISTINCT a.serial_id) AS 到期订单数,
+       ROUND(SUM(a.remit_amt_period), 0) AS 放款总额,
+       ROUND(SUM(a.repaid_amt_period) - SUM(a.remit_amt_period), 0) AS 总利润额,
+       ROUND(ROUND(SUM(a.repaid_amt_period) - SUM(a.remit_amt_period), 2)
+             / NULLIF(ROUND(SUM(a.remit_amt_period), 2), 0) * 100, 2) AS 盈利率
+FROM t7
+JOIN w1_users w ON w.user_id = t7.user_id AND w.ab_group = t7.ab_group
+JOIN wangchuanliang.repayment_plan_v2_copy a ON a.user_id = t7.user_id AND a.remit_date &gt;= t7.recall_date
+WHERE a.is_remit = 1 AND a.due_date &lt; current_date AND a.loan_status_code_period IN (7, 8)
+GROUP BY t7.ab_group
+ORDER BY t7.ab_group;</pre></details>
 <footer class="foot">口径说明（本版为到期订单口径 · 数据更新版）：召回日 = 各表名最后一个日期（07-21/22/23/24）；第一周 = 召回日~+6（券有效期 7 天），第二周 = +7~+13，第三周 = +14~+20，21 天后 = +21 起。只统计已到期订单（due_date &lt; current_date），分期级统计（repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period ∈ (7,8)）。盈利率 = (Σrepaid_amt_period − Σremit_amt_period) / Σremit_amt_period。<br>⚠️ 本版观察期至 08-31，较 8-24 版延长一周，到期订单 531 → 673；盈利率结论已反转（实验组 16.84% vs 对照组 21.38%）。建议 9 月中旬观察期更成熟后再做最终裁定。</footer>
 </main><script>
 Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
