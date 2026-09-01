@@ -56,6 +56,13 @@
 </tbody></table></div>
 <div class="callout"><strong>结论：首周提单用户中，用券的总盈利更高（薄利多销成立）。</strong>实验组总利润 160,473 元，比对照组 136,070 元多 <b>+24,403 元（+17.9%）</b>——尽管用券让单笔盈利率下降 2.86pp（23.42%→20.56%），但拉来了更多用户（188 vs 138）和更大放款规模（780,416 vs 581,045，+34.3%），规模增幅盖过了利润率降幅。</div>
 <div class="callout amber"><strong>但整体是反的：</strong>把后续窗口用户也算进来，实验组整体总利润 169,985 元反而低于对照组 197,281 元（-27,296，-13.8%）。原因仍是「优质用户前置消化」——券把优质用户都吸到首周（首周利润高），导致实验组后续窗口回归的全是劣质用户，把整体总利润又拖了下去。</div>
+<div class="table"><table><caption>第一笔 vs 后续笔订单的盈利拆解（到期订单口径）</caption><thead><tr><th>分组</th><th>订单类型</th><th>订单数</th><th>用户数</th><th>放款总额</th><th>总利润额</th><th>盈利率</th><th>逾期率_金额</th></tr></thead><tbody>
+<tr><td>对照组</td><td>第一笔订单</td><td>138</td><td>138</td><td>376,103</td><td>84,467</td><td class="good">22.46%</td><td>20.68%</td></tr>
+<tr><td>对照组</td><td>后续笔订单</td><td>58</td><td>36</td><td>204,942</td><td>51,603</td><td>25.18%</td><td>16.55%</td></tr>
+<tr><td>实验组</td><td>第一笔订单</td><td>188</td><td>188</td><td>524,322</td><td class="good">95,859</td><td class="bad">18.28%</td><td class="good">16.97%</td></tr>
+<tr><td>实验组</td><td>后续笔订单</td><td>80</td><td>54</td><td>256,094</td><td class="good">64,614</td><td>25.23%</td><td class="good">15.14%</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>让利只吃第一笔：</strong>① 第一笔订单（用券）实验组盈利率 18.28% 明显低于对照组 22.46%（-4.18pp，30% 降息让利）；② 第一笔之后的复借订单，两组盈利率几乎完全一样（25.23% vs 25.18%）；③ 复借订单盈利率（25.2%）反而高于首笔——复借用户是优质用户。<strong>结论：券的让利是「一次性成本」，只吃第一笔；后续复借的盈利质量并未因券而变差。</strong></div>
 <section class="note"><div class="insight"><div class="idx">01</div><div><h3>首周券期内，券「薄利多销」成立。</h3><p>首周提单用户：实验组总利润 160,473 vs 对照 136,070（+17.9%）。降息换来的规模（+34.3% 放款）覆盖了让利成本（-2.86pp 利润率）。</p></div></div><div class="insight"><div class="idx">02</div><div><h3>但全周期看，券「赚了首周、赔了后续」。</h3><p>整体总利润实验组 169,985 元 &lt; 对照 197,281 元（-13.8%）。券把优质用户前置消化，后续窗口回归劣质用户，把首周多赚的利润又吐了回去。</p></div></div></section>
 
 <h2>五、核心结论汇总</h2>
@@ -233,6 +240,63 @@ JOIN wangchuanliang.repayment_plan_v2_copy a ON a.user_id = t7.user_id AND a.rem
 WHERE a.is_remit = 1 AND a.due_date &lt; current_date AND a.loan_status_code_period IN (7, 8)
 GROUP BY t7.ab_group
 ORDER BY t7.ab_group;</pre></details>
+<details><summary>模块七：第一周提单用户——第一笔 vs 后续笔订单盈利拆解</summary><pre>-- ============================================================
+-- 模块七：第一周提单用户——第一笔 vs 后续笔订单的盈利拆解
+-- 第一笔 = 用户召回后按放款时间排序的首笔订单；后续笔 = 复借订单
+-- ============================================================
+WITH t7 AS (
+    SELECT user_id, ab_group, MIN(recall_date) AS recall_date
+    FROM (
+        SELECT churn_user_id::bigint AS user_id, ab_group, DATE &#x27;2026-07-21&#x27; AS recall_date
+        FROM wangchuanliang.no_apply_0716_0721_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-22&#x27;
+        FROM wangchuanliang.no_apply_0717_0722_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-23&#x27;
+        FROM wangchuanliang.no_apply_0718_0723_30pct
+        UNION ALL
+        SELECT churn_user_id::bigint, ab_group, DATE &#x27;2026-07-24&#x27;
+        FROM wangchuanliang.no_apply_0719_0724_30pct
+    ) x
+    GROUP BY user_id, ab_group
+),
+w1_users AS (
+    SELECT DISTINCT t7.user_id, t7.ab_group
+    FROM t7
+    JOIN wangchuanliang.order_loan_f_v2_copy o ON o.user_id = t7.user_id
+    WHERE o.apply_date BETWEEN t7.recall_date AND t7.recall_date + 6
+),
+order_seq AS (
+    SELECT a.user_id, a.serial_id, MIN(a.remit_time) AS remit_time
+    FROM t7
+    JOIN wangchuanliang.repayment_plan_v2_copy a ON a.user_id = t7.user_id AND a.remit_date &gt;= t7.recall_date
+    WHERE a.is_remit = 1
+    GROUP BY a.user_id, a.serial_id
+),
+marked AS (
+    SELECT user_id, serial_id,
+           ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY remit_time, serial_id) AS rn
+    FROM order_seq
+)
+SELECT t7.ab_group AS 分组,
+       CASE WHEN m.rn = 1 THEN &#x27;第一笔订单&#x27; ELSE &#x27;第一笔之后订单&#x27; END AS 订单类型,
+       COUNT(DISTINCT a.serial_id) AS 订单数,
+       COUNT(DISTINCT a.user_id) AS 用户数,
+       ROUND(SUM(a.remit_amt_period), 0) AS 放款总额,
+       ROUND(SUM(a.repaid_amt_period) - SUM(a.remit_amt_period), 0) AS 总利润额,
+       ROUND(ROUND(SUM(a.repaid_amt_period) - SUM(a.remit_amt_period), 2)
+             / NULLIF(ROUND(SUM(a.remit_amt_period), 2), 0) * 100, 2) AS 盈利率,
+       ROUND((SUM(CASE WHEN a.loan_status_code_period = 8 THEN a.remit_amt_period ELSE 0 END) + 0.0)
+             / NULLIF(SUM(a.remit_amt_period), 0) * 100, 2) AS 逾期率_金额
+FROM t7
+JOIN w1_users w ON w.user_id = t7.user_id AND w.ab_group = t7.ab_group
+JOIN marked m ON m.user_id = t7.user_id
+JOIN wangchuanliang.repayment_plan_v2_copy a ON a.user_id = t7.user_id AND a.serial_id = m.serial_id AND a.remit_date &gt;= t7.recall_date
+WHERE a.is_remit = 1 AND a.due_date &lt; current_date AND a.loan_status_code_period IN (7, 8)
+GROUP BY t7.ab_group, 订单类型
+ORDER BY t7.ab_group, 订单类型;</pre></details>
+
 <footer class="foot">口径说明（本版为到期订单口径 · 数据更新版）：召回日 = 各表名最后一个日期（07-21/22/23/24）；第一周 = 召回日~+6（券有效期 7 天），第二周 = +7~+13，第三周 = +14~+20，21 天后 = +21 起。只统计已到期订单（due_date &lt; current_date），分期级统计（repayment_plan_v2_copy 每期一行，仅计 loan_status_code_period ∈ (7,8)）。盈利率 = (Σrepaid_amt_period − Σremit_amt_period) / Σremit_amt_period。<br>⚠️ 本版观察期至 08-31，较 8-24 版延长一周，到期订单 531 → 673；盈利率结论已反转（实验组 16.84% vs 对照组 21.38%）。建议 9 月中旬观察期更成熟后再做最终裁定。</footer>
 </main><script>
 Chart.defaults.color='#c0d7e8';Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
